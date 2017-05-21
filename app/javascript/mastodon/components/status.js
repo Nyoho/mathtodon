@@ -15,6 +15,12 @@ import escapeTextContentForBrowser from 'escape-html';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import scheduleIdleTask from '../features/ui/util/schedule_idle_task';
 
+const isMathjaxifyable = str => {
+  return [ /\$\$(.*?)\$\$/g, /\$(.*?)\$/g, /\\\((.*?)\\\)/g, /\\\[(.*?)\\\]/g, /\\begin\{.+?\}(.*?)\\end\{.+?\}/g]
+    .map( r => str.match(r))
+    .reduce((prev, elem) => prev || elem, null);
+}
+
 export default class Status extends ImmutablePureComponent {
 
   static contextTypes = {
@@ -210,7 +216,7 @@ export default class Status extends ImmutablePureComponent {
     }
 
     return (
-      <div className={`status ${this.props.muted ? 'muted' : ''} status-${status.get('visibility')}`} data-id={status.get('id')} ref={this.handleRef}>
+      <div className={`status ${this.props.muted ? 'muted' : ''} status-${status.get('visibility')} ${isMathjaxifyable(status.get('content')) !== null ? ' mathjaxified__content' : ''}`} data-id={status.get('id')} ref={this.handleRef}>
         <div className='status__info'>
           <a href={status.get('url')} className='status__relative-time' target='_blank' rel='noopener'><RelativeTimestamp timestamp={status.get('created_at')} /></a>
 
