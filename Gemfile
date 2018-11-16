@@ -99,7 +99,7 @@ group :development do
   gem 'better_errors', '~> 2.1'
   gem 'binding_of_caller', '~> 0.7'
   gem 'bullet', '~> 5.5'
-  gem 'letter_opener', '~> 1.4'
+  gem 'letter_opener', '~> 1.6'
   gem 'letter_opener_web', '~> 1.3'
   gem 'rubocop', require: false
   gem 'brakeman', '~> 3.6', require: false
