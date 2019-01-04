@@ -125,7 +125,7 @@ GEM
     connection_pool (2.2.1)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crass (1.0.3)
+    crass (1.0.4)
     css_parser (1.6.0)
       addressable
     debug_inspector (0.0.3)
@@ -496,7 +496,7 @@ GEM
     rufus-scheduler (3.4.2)
       et-orbi (~> 1.0)
     safe_yaml (1.0.4)
-    sanitize (4.6.4)
+    sanitize (4.6.6)
       crass (~> 1.0.2)
       nokogiri (>= 1.4.4)
       nokogumbo (~> 1.4)
@@ -699,7 +699,7 @@ DEPENDENCIES
   rubocop
   ruby-oembed (~> 0.12)
   ruby-progressbar (~> 1.4)
-  sanitize (~> 4.6.4)
+  sanitize (~> 4.6.6)
   scss_lint (~> 0.55)
   sidekiq (~> 5.0)
   sidekiq-bulk (~> 0.1.1)
