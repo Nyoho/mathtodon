@@ -72,7 +72,7 @@ gem 'redis', '~> 4.0', require: ['redis', 'redis/connection/hiredis']
 gem 'mario-redis-lock', '~> 1.2', require: 'redis_lock'
 gem 'rqrcode', '~> 0.10'
 gem 'ruby-progressbar', '~> 1.4'
-gem 'sanitize', '~> 4.6'
+gem 'sanitize', '~> 5.0'
 gem 'sidekiq', '~> 5.1'
 gem 'sidekiq-scheduler', '~> 2.2'
 gem 'sidekiq-unique-jobs', '~> 5.0'
