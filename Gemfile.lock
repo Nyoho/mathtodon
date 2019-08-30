@@ -206,7 +206,7 @@ GEM
     erubi (1.8.0)
     et-orbi (1.1.6)
       tzinfo
-    excon (0.62.0)
+    excon (0.66.0)
     fabrication (2.20.2)
     faker (1.9.3)
       i18n (>= 0.7)
@@ -223,8 +223,8 @@ GEM
     fog-json (1.2.0)
       fog-core
       multi_json (~> 1.10)
-    fog-openstack (0.3.7)
-      fog-core (>= 1.45, <= 2.1.0)
+    fog-openstack (1.0.9)
+      fog-core (~> 2.1)
       fog-json (>= 1.0)
       ipaddress (>= 0.8)
     formatador (0.2.5)
@@ -343,7 +343,7 @@ GEM
       nokogiri (~> 1.8, >= 1.8.3)
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2018.0812)
+    mime-types-data (3.2019.0331)
     mimemagic (0.3.3)
     mini_mime (1.0.1)
     mini_portile2 (2.4.0)
@@ -688,7 +688,7 @@ DEPENDENCIES
   fast_blank (~> 1.0)
   fastimage
   fog-core (<= 2.1.0)
-  fog-openstack (~> 0.3)
+  fog-openstack (~> 1.0)
   fuubar (~> 2.3)
   goldfinger (~> 2.1)
   hamlit-rails (~> 0.2)
