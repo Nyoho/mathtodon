@@ -469,7 +469,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
     rainbow (3.0.0)
-    rake (12.3.2)
+    rake (12.3.3)
     rdf (3.0.9)
       hamster (~> 3.0)
       link_header (~> 0.0, >= 0.0.8)
