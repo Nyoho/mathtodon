@@ -108,7 +108,7 @@
     "is-nan": "^1.2.1",
     "load-script": "^1.0.0",
     "load-script-once": "^2.0.1",
-    "lodash": "^4.7.11",
+    "lodash": "^4.17.13",
     "mark-loader": "^0.1.6",
     "marky": "^1.2.1",
     "mini-css-extract-plugin": "^0.5.0",
