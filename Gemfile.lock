@@ -459,7 +459,8 @@ GEM
     rack (2.0.7)
     rack-attack (6.1.0)
       rack (>= 1.0, < 3)
-    rack-cors (1.0.3)
+    rack-cors (1.1.1)
+      rack (>= 2.0.0)
     rack-protection (2.0.5)
       rack
     rack-proxy (0.6.5)
@@ -762,7 +763,7 @@ DEPENDENCIES
   puma (~> 4.2)
   pundit (~> 2.1)
   rack-attack (~> 6.1)
-  rack-cors (~> 1.0)
+  rack-cors (~> 1.1)
   rails (~> 5.2.3)
   rails-controller-testing (~> 1.0)
   rails-i18n (~> 5.1)
