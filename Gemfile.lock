@@ -320,7 +320,7 @@ GEM
     iso-639 (0.2.8)
     jaro_winkler (1.5.3)
     jmespath (1.4.0)
-    json (2.2.0)
+    json (2.3.0)
     json-canonicalization (0.1.0)
     json-ld-preloaded (3.0.4)
       json-ld (~> 3.0)
