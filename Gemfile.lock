@@ -626,7 +626,8 @@ GEM
       tty-screen (~> 0.7)
       wisper (~> 2.0.0)
     tty-screen (0.7.0)
-    twitter-text (1.14.7)
+    twitter-text (3.0.0)
+      idn-ruby
       unf (~> 0.1.0)
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
@@ -782,7 +783,7 @@ DEPENDENCIES
   thwait (~> 0.1.0)
   tty-command (~> 0.9)
   tty-prompt (~> 0.20)
-  twitter-text (~> 1.14)
+  twitter-text (~> 3.0)
   tzinfo-data (~> 1.2019)
   webmock (~> 3.8)
   webpacker (~> 4.2)
