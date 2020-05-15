@@ -1368,7 +1368,12 @@ article:has(.mathjaxified__content) + article:has(.mathjaxified__content) { // T
 
 .account__avatar {
   @include avatar-radius;
+  display: block;
   position: relative;
+
+  width: 36px;
+  height: 36px;
+  background-size: 36px 36px;
 
   &-inline {
     display: inline-block;
@@ -1412,6 +1417,12 @@ a .account__avatar {
   &-base {
     @include avatar-radius;
     @include avatar-size(36px);
+
+    img {
+      @include avatar-radius;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   &-overlay {
@@ -1422,6 +1433,12 @@ a .account__avatar {
     bottom: 0;
     right: 0;
     z-index: 1;
+
+    img {
+      @include avatar-radius;
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 
@@ -5625,6 +5642,13 @@ a.status-card.compact:hover {
   }
 }
 
+.gifv {
+  video {
+    max-width: 100vw;
+    max-height: 80vh;
+  }
+}
+
 .directory {
   &__list {
     width: 100%;
@@ -6602,6 +6626,7 @@ noscript {
 
       path:last-child {
         stroke: lighten($highlight-text-color, 6%) !important;
+        fill: none !important;
       }
     }
   }
