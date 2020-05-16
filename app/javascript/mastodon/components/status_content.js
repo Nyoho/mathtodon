@@ -50,12 +50,6 @@ const mathjaxify = str => {
     return s;
 };
 
-const isMathjaxifyable = str => {
-    return [ /\$\$(.*?)\$\$/g, /\$(.*?)\$/g, /\\\((.*?)\\\)/g, /\\\[(.*?)\\\]/g]
-    .map( r => str.match(r))
-    .reduce((prev, elem) => prev || elem, false);
-}
-
 const MAX_HEIGHT = 642; // 20px * 32 (+ 2px padding at the top)
 
 export default class StatusContent extends React.PureComponent {
