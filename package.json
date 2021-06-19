@@ -110,7 +110,7 @@
     "js-yaml": "^3.13.1",
     "load-script": "^1.0.0",
     "load-script-once": "^2.0.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mark-loader": "^0.1.6",
     "marky": "^1.2.1",
     "mini-css-extract-plugin": "^0.9.0",
