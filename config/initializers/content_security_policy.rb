@@ -56,7 +56,7 @@ Rails.application.config.content_security_policy_nonce_generator = -> request { 
 module ActionDispatch
   class ContentSecurityPolicy
     def nonce_directive?(directive)
-      directive == 'style-src'
+      false
     end
   end
 end
