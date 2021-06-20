@@ -104,7 +104,7 @@ export default class StatusContent extends React.PureComponent {
       link.setAttribute('rel', 'noopener noreferrer');
     }
 
-    loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
+    loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
 	               (err, script) => {
 	                 if (err) {
 	                 } else {

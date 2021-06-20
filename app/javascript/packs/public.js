@@ -36,7 +36,7 @@ function main() {
   const Rellax = require('rellax');
   const { createBrowserHistory } = require('history');
 
-  loadScript('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function () {
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function () {
     const options = {
       tex2jax: {
 	    inlineMath: [ ['$','$'], ['\\(','\\)'] ]
