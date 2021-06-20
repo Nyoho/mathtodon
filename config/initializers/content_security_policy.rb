@@ -25,7 +25,7 @@ Rails.application.config.content_security_policy do |p|
   p.frame_ancestors :none
   p.font_src        :self, assets_host, cloudflarecdn
   p.img_src         :self, :https, :data, :blob, assets_host, cloudflarecdn, mathjax
-  p.style_src       :self, :unsafe_inline, assets_host, assets_host, cloudflarecdn, mathjax
+  p.style_src       :self, :unsafe_inline, assets_host, cloudflarecdn, mathjax
   p.media_src       :self, :https, :data, assets_host, cloudflarecdn, mathjax
   p.frame_src       :self, :https
   p.manifest_src    :self, assets_host
