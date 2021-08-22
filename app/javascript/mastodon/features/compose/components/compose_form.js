@@ -203,7 +203,7 @@ class ComposeForm extends ImmutablePureComponent {
       publishText = this.props.privacy !== 'unlisted' ? intl.formatMessage(messages.publishLoud, { publish: intl.formatMessage(messages.publish) }) : intl.formatMessage(messages.publish);
     }
 
-    const flag = isMathjaxifyable(publishText);
+    const flag = isMathjaxifyable(this.props.text);
 
     return (
       <div className='compose-form'>
@@ -269,7 +269,7 @@ class ComposeForm extends ImmutablePureComponent {
           from={{ opacity: flag ? 0 : 1, transform: flag ? 'scale(0)' : 'scale(1)' }}
           to=  {{ opacity: flag ? 1 : 0, transform: flag ? 'scale(1)' : 'scale(0)' }}>
           {props => <div style={props} className='compose-form__live-preview'>
-                      <LivePreview text={publishText} />
+                      <LivePreview text={this.props.text} />
                     </div>
           }
         </Spring>
