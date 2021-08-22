@@ -84,6 +84,18 @@ class ComposeForm extends ImmutablePureComponent {
     }
   }
 
+  getFulltextForCharacterCounting = () => {
+    return [this.props.spoiler? this.props.spoilerText: '', countableText(this.props.text)].join('');
+  }
+
+  canSubmit = () => {
+    const { isSubmitting, isChangingUpload, isUploading, anyMedia } = this.props;
+    const fulltext = this.getFulltextForCharacterCounting();
+    const isOnlyWhitespace = fulltext.length !== 0 && fulltext.trim().length === 0;
+
+    return !(isSubmitting || isUploading || isChangingUpload || length(fulltext) > 500 || (isOnlyWhitespace && !anyMedia));
+  }
+
   handleSubmit = () => {
     if (this.props.text !== this.autosuggestTextarea.textarea.value) {
       // Something changed the text inside the textarea (e.g. browser extensions like Grammarly)
@@ -91,11 +103,7 @@ class ComposeForm extends ImmutablePureComponent {
       this.props.onChange(this.autosuggestTextarea.textarea.value);
     }
 
-    // Submit disabled:
-    const { isSubmitting, isChangingUpload, isUploading, anyMedia } = this.props;
-    const fulltext = [this.props.spoilerText, countableText(this.props.text)].join('');
-
-    if (isSubmitting || isUploading || isChangingUpload || length(fulltext) > 500 || (fulltext.length !== 0 && fulltext.trim().length === 0 && !anyMedia)) {
+    if (!this.canSubmit()) {
       return;
     }
 
@@ -185,10 +193,8 @@ class ComposeForm extends ImmutablePureComponent {
   }
 
   render () {
-    const { intl, onPaste, showSearch, anyMedia } = this.props;
+    const { intl, onPaste, showSearch } = this.props;
     const disabled = this.props.isSubmitting;
-    const text     = [this.props.spoilerText, countableText(this.props.text)].join('');
-    const disabledButton = disabled || this.props.isUploading || this.props.isChangingUpload || length(text) > 500 || (text.length !== 0 && text.trim().length === 0 && !anyMedia);
     let publishText = '';
 
     if (this.props.privacy === 'private' || this.props.privacy === 'direct') {
@@ -197,7 +203,7 @@ class ComposeForm extends ImmutablePureComponent {
       publishText = this.props.privacy !== 'unlisted' ? intl.formatMessage(messages.publishLoud, { publish: intl.formatMessage(messages.publish) }) : intl.formatMessage(messages.publish);
     }
 
-    const flag = isMathjaxifyable(text);
+    const flag = isMathjaxifyable(this.props.text);
 
     return (
       <div className='compose-form'>
@@ -252,18 +258,18 @@ class ComposeForm extends ImmutablePureComponent {
             <PrivacyDropdownContainer />
             <SpoilerButtonContainer />
           </div>
-          <div className='character-counter__wrapper'><CharacterCounter max={500} text={text} /></div>
+          <div className='character-counter__wrapper'><CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} /></div>
         </div>
 
         <div className='compose-form__publish'>
-          <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabledButton} block /></div>
+          <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={!this.canSubmit()} block /></div>
         </div>
         <Spring
           config={{tension: 273, friction: 17, mass: 0.8 }}
           from={{ opacity: flag ? 0 : 1, transform: flag ? 'scale(0)' : 'scale(1)' }}
           to=  {{ opacity: flag ? 1 : 0, transform: flag ? 'scale(1)' : 'scale(0)' }}>
           {props => <div style={props} className='compose-form__live-preview'>
-                      <LivePreview text={text} />
+                      <LivePreview text={this.props.text} />
                     </div>
           }
         </Spring>
