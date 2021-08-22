@@ -160,7 +160,8 @@ GEM
     cose (1.0.0)
       cbor (~> 0.5.9)
       openssl-signature_algorithm (~> 0.4.0)
-    crack (0.4.4)
+    crack (0.4.5)
+      rexml
     crass (1.0.6)
     css_parser (1.7.1)
       addressable
