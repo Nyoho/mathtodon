@@ -276,7 +276,7 @@ GEM
     httplog (1.5.0)
       rack (>= 1.0)
       rainbow (>= 2.0.0)
-    i18n (1.8.10)
+    i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     i18n-tasks (0.9.34)
       activesupport (>= 4.0.2)
@@ -337,8 +337,8 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
-    makara (0.5.0)
-      activerecord (>= 3.0.0)
+    makara (0.5.1)
+      activerecord (>= 5.2.0)
     marcel (1.0.1)
     mario-redis-lock (1.2.1)
       redis (>= 3.0.5)
@@ -671,7 +671,7 @@ GEM
     xorcist (1.1.2)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.4.2)
+    zeitwerk (2.5.1)
 
 PLATFORMS
   ruby
