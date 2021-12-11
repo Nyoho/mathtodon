@@ -24,7 +24,7 @@ gem 'paperclip', '~> 6.0'
 gem 'blurhash', '~> 0.1'
 
 gem 'active_model_serializers', '~> 0.10'
-gem 'addressable', '~> 2.7'
+gem 'addressable', '~> 2.8'
 gem 'bootsnap', '~> 1.6.0', require: false
 gem 'browser'
 gem 'charlock_holmes', '~> 0.7.7'
@@ -53,7 +53,7 @@ gem 'fastimage'
 gem 'hiredis', '~> 0.6'
 gem 'redis-namespace', '~> 1.8'
 gem 'htmlentities', '~> 4.3'
-gem 'http', '~> 4.4'
+gem 'http', '~> 5.0'
 gem 'http_accept_language', '~> 2.1'
 gem 'httplog', '~> 1.5.0'
 gem 'idn-ruby', require: 'idn'
@@ -120,7 +120,7 @@ group :test do
   gem 'rails-controller-testing', '~> 1.0'
   gem 'rspec-sidekiq', '~> 3.1'
   gem 'simplecov', '~> 0.21', require: false
-  gem 'webmock', '~> 3.13'
+  gem 'webmock', '~> 3.14'
   gem 'parallel_tests', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'
 end
