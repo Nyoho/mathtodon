@@ -270,7 +270,7 @@ GEM
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
-    http-parser (1.2.1)
+    http-parser (1.2.3)
       ffi-compiler (>= 1.0, < 2.0)
     http_accept_language (2.1.1)
     httplog (1.5.0)
@@ -288,7 +288,7 @@ GEM
       rails-i18n
       rainbow (>= 2.2.2, < 4.0)
       terminal-table (>= 1.5.1)
-    idn-ruby (0.1.0)
+    idn-ruby (0.1.4)
     ipaddress (0.8.3)
     iso-639 (0.3.5)
     jmespath (1.4.0)
