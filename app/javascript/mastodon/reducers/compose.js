@@ -21,6 +21,7 @@ import {
   COMPOSE_SUGGESTIONS_CLEAR,
   COMPOSE_SUGGESTIONS_READY,
   COMPOSE_SUGGESTION_SELECT,
+  COMPOSE_SUGGESTION_IGNORE,
   COMPOSE_SUGGESTION_TAGS_UPDATE,
   COMPOSE_TAG_HISTORY_UPDATE,
   COMPOSE_SENSITIVITY_CHANGE,
@@ -39,6 +40,10 @@ import {
   COMPOSE_POLL_OPTION_CHANGE,
   COMPOSE_POLL_OPTION_REMOVE,
   COMPOSE_POLL_SETTINGS_CHANGE,
+  INIT_MEDIA_EDIT_MODAL,
+  COMPOSE_CHANGE_MEDIA_DESCRIPTION,
+  COMPOSE_CHANGE_MEDIA_FOCUS,
+  COMPOSE_SET_STATUS,
 } from '../actions/compose';
 import { TIMELINE_DELETE } from '../actions/timelines';
 import { STORE_HYDRATE } from '../actions/store';
@@ -54,6 +59,7 @@ const initialState = ImmutableMap({
   spoiler: false,
   spoiler_text: '',
   privacy: null,
+  id: null,
   text: '',
   focusDate: null,
   caretPosition: null,
@@ -76,6 +82,13 @@ const initialState = ImmutableMap({
   resetFileKey: Math.floor((Math.random() * 0x10000)),
   idempotencyKey: null,
   tagHistory: ImmutableList(),
+  media_modal: ImmutableMap({
+    id: null,
+    description: '',
+    focusX: 0,
+    focusY: 0,
+    dirty: false,
+  }),
 });
 
 const initialPoll = ImmutableMap({
@@ -96,6 +109,7 @@ function statusToTextMentions(state, status) {
 
 function clearAll(state) {
   return state.withMutations(map => {
+    map.set('id', null);
     map.set('text', '');
     map.set('spoiler', false);
     map.set('spoiler_text', '');
@@ -151,6 +165,17 @@ const insertSuggestion = (state, position, token, completion, path) => {
       map.set('focusDate', new Date());
       map.set('caretPosition', position + completion.length + 1);
     }
+    map.set('idempotencyKey', uuid());
+  });
+};
+
+const ignoreSuggestion = (state, position, token, completion, path) => {
+  return state.withMutations(map => {
+    map.updateIn(path, oldText => `${oldText.slice(0, position + token.length)} ${oldText.slice(position + token.length)}`);
+    map.set('suggestion_token', null);
+    map.set('suggestions', ImmutableList());
+    map.set('focusDate', new Date());
+    map.set('caretPosition', position + token.length + 1);
     map.set('idempotencyKey', uuid());
   });
 };
@@ -291,6 +316,7 @@ export default function compose(state = initialState, action) {
     return state.set('is_composing', action.value);
   case COMPOSE_REPLY:
     return state.withMutations(map => {
+      map.set('id', null);
       map.set('in_reply_to', action.status.get('id'));
       map.set('text', statusToTextMentions(state, action.status));
       map.set('privacy', privacyPreference(action.status.get('visibility'), state.get('default_privacy')));
@@ -307,21 +333,12 @@ export default function compose(state = initialState, action) {
         map.set('spoiler_text', '');
       }
     });
-  case COMPOSE_REPLY_CANCEL:
-  case COMPOSE_RESET:
-    return state.withMutations(map => {
-      map.set('in_reply_to', null);
-      map.set('text', '');
-      map.set('spoiler', false);
-      map.set('spoiler_text', '');
-      map.set('privacy', state.get('default_privacy'));
-      map.set('poll', null);
-      map.set('idempotencyKey', uuid());
-    });
   case COMPOSE_SUBMIT_REQUEST:
     return state.set('is_submitting', true);
   case COMPOSE_UPLOAD_CHANGE_REQUEST:
     return state.set('is_changing_upload', true);
+  case COMPOSE_REPLY_CANCEL:
+  case COMPOSE_RESET:
   case COMPOSE_SUBMIT_SUCCESS:
     return clearAll(state);
   case COMPOSE_SUBMIT_FAIL:
@@ -354,6 +371,19 @@ export default function compose(state = initialState, action) {
 
         return item;
       }));
+  case INIT_MEDIA_EDIT_MODAL:
+    const media =  state.get('media_attachments').find(item => item.get('id') === action.id);
+    return state.set('media_modal', ImmutableMap({
+      id: action.id,
+      description: media.get('description') || '',
+      focusX: media.getIn(['meta', 'focus', 'x'], 0),
+      focusY: media.getIn(['meta', 'focus', 'y'], 0),
+      dirty: false,
+    }));
+  case COMPOSE_CHANGE_MEDIA_DESCRIPTION:
+    return state.setIn(['media_modal', 'description'], action.description).setIn(['media_modal', 'dirty'], true);
+  case COMPOSE_CHANGE_MEDIA_FOCUS:
+    return state.setIn(['media_modal', 'focusX'], action.focusX).setIn(['media_modal', 'focusY'], action.focusY).setIn(['media_modal', 'dirty'], true);
   case COMPOSE_MENTION:
     return state.withMutations(map => {
       map.update('text', text => [text.trim(), `@${action.account.get('acct')} `].filter((str) => str.length !== 0).join(' '));
@@ -375,6 +405,8 @@ export default function compose(state = initialState, action) {
     return state.set('suggestions', ImmutableList(normalizeSuggestions(state, action))).set('suggestion_token', action.token);
   case COMPOSE_SUGGESTION_SELECT:
     return insertSuggestion(state, action.position, action.token, action.completion, action.path);
+  case COMPOSE_SUGGESTION_IGNORE:
+    return ignoreSuggestion(state, action.position, action.token, action.completion, action.path);
   case COMPOSE_SUGGESTION_TAGS_UPDATE:
     return updateSuggestionTags(state, action.token);
   case COMPOSE_TAG_HISTORY_UPDATE:
@@ -390,6 +422,7 @@ export default function compose(state = initialState, action) {
   case COMPOSE_UPLOAD_CHANGE_SUCCESS:
     return state
       .set('is_changing_upload', false)
+      .setIn(['media_modal', 'dirty'], false)
       .update('media_attachments', list => list.map(item => {
         if (item.get('id') === action.media.id) {
           return fromJS(action.media);
@@ -411,6 +444,34 @@ export default function compose(state = initialState, action) {
       if (action.status.get('spoiler_text').length > 0) {
         map.set('spoiler', true);
         map.set('spoiler_text', action.status.get('spoiler_text'));
+      } else {
+        map.set('spoiler', false);
+        map.set('spoiler_text', '');
+      }
+
+      if (action.status.get('poll')) {
+        map.set('poll', ImmutableMap({
+          options: action.status.getIn(['poll', 'options']).map(x => x.get('title')),
+          multiple: action.status.getIn(['poll', 'multiple']),
+          expires_in: expiresInFromExpiresAt(action.status.getIn(['poll', 'expires_at'])),
+        }));
+      }
+    });
+  case COMPOSE_SET_STATUS:
+    return state.withMutations(map => {
+      map.set('id', action.status.get('id'));
+      map.set('text', action.text);
+      map.set('in_reply_to', action.status.get('in_reply_to_id'));
+      map.set('privacy', action.status.get('visibility'));
+      map.set('media_attachments', action.status.get('media_attachments'));
+      map.set('focusDate', new Date());
+      map.set('caretPosition', null);
+      map.set('idempotencyKey', uuid());
+      map.set('sensitive', action.status.get('sensitive'));
+
+      if (action.spoiler_text.length > 0) {
+        map.set('spoiler', true);
+        map.set('spoiler_text', action.spoiler_text);
       } else {
         map.set('spoiler', false);
         map.set('spoiler_text', '');
