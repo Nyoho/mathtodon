@@ -175,7 +175,7 @@ GEM
     crass (1.0.6)
     css_parser (1.7.1)
       addressable
-    debug_inspector (1.0.0)
+    debug_inspector (1.1.0)
     devise (4.8.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
