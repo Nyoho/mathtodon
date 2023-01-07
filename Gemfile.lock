@@ -304,7 +304,7 @@ GEM
     httplog (1.5.0)
       rack (>= 1.0)
       rainbow (>= 2.0.0)
-    i18n (1.10.0)
+    i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     i18n-tasks (1.0.10)
       activesupport (>= 4.0.2)
