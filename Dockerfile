@@ -112,7 +112,7 @@ USER mastodon
 
 # Precompile assets
 RUN cd ~ && \
-	OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder rails assets:precompile && \
+	NODE_OPTIONS=--max_old_space_size=1024 OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder rails assets:precompile && \
 	yarn cache clean
 
 # Set the work dir and the container entry point
