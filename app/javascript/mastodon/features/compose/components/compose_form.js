@@ -35,6 +35,7 @@ const messages = defineMessages({
   spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Write your warning here' },
   publish: { id: 'compose_form.publish', defaultMessage: 'Toot' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
+  saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
 });
 
 export default @injectIntl
@@ -56,6 +57,7 @@ class ComposeForm extends ImmutablePureComponent {
     preselectDate: PropTypes.instanceOf(Date),
     isSubmitting: PropTypes.bool,
     isChangingUpload: PropTypes.bool,
+    isEditing: PropTypes.bool,
     isUploading: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
@@ -67,6 +69,7 @@ class ComposeForm extends ImmutablePureComponent {
     onPickEmoji: PropTypes.func.isRequired,
     showSearch: PropTypes.bool,
     anyMedia: PropTypes.bool,
+    isInReply: PropTypes.bool,
     singleColumn: PropTypes.bool,
   };
 
@@ -156,7 +159,7 @@ class ComposeForm extends ImmutablePureComponent {
     if (this.props.focusDate !== prevProps.focusDate) {
       let selectionEnd, selectionStart;
 
-      if (this.props.preselectDate !== prevProps.preselectDate) {
+      if (this.props.preselectDate !== prevProps.preselectDate && this.props.isInReply) {
         selectionEnd   = this.props.text.length;
         selectionStart = this.props.text.search(/\s/) + 1;
       } else if (typeof this.props.caretPosition === 'number') {
@@ -167,8 +170,13 @@ class ComposeForm extends ImmutablePureComponent {
         selectionStart = selectionEnd;
       }
 
-      this.autosuggestTextarea.textarea.setSelectionRange(selectionStart, selectionEnd);
-      this.autosuggestTextarea.textarea.focus();
+      // Because of the wicg-inert polyfill, the activeElement may not be
+      // immediately selectable, we have to wait for observers to run, as
+      // described in https://github.com/WICG/inert#performance-and-gotchas
+      Promise.resolve().then(() => {
+        this.autosuggestTextarea.textarea.setSelectionRange(selectionStart, selectionEnd);
+        this.autosuggestTextarea.textarea.focus();
+      }).catch(console.error);
     } else if(prevProps.isSubmitting && !this.props.isSubmitting) {
       this.autosuggestTextarea.textarea.focus();
     } else if (this.props.spoiler !== prevProps.spoiler) {
@@ -205,7 +213,9 @@ class ComposeForm extends ImmutablePureComponent {
     const disabled = this.props.isSubmitting;
     let publishText = '';
 
-    if (this.props.privacy === 'private' || this.props.privacy === 'direct') {
+    if (this.props.isEditing) {
+      publishText = intl.formatMessage(messages.saveChanges);
+    } else if (this.props.privacy === 'private' || this.props.privacy === 'direct') {
       publishText = <span className='compose-form__publish-private'><Icon id='lock' /> {intl.formatMessage(messages.publish)}</span>;
     } else {
       publishText = this.props.privacy !== 'unlisted' ? intl.formatMessage(messages.publishLoud, { publish: intl.formatMessage(messages.publish) }) : intl.formatMessage(messages.publish);
@@ -263,7 +273,7 @@ class ComposeForm extends ImmutablePureComponent {
           <div className='compose-form__buttons'>
             <UploadButtonContainer />
             <PollButtonContainer />
-            <PrivacyDropdownContainer />
+            <PrivacyDropdownContainer disabled={this.props.isEditing} />
             <SpoilerButtonContainer />
           </div>
           <div className='character-counter__wrapper'><CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} /></div>
