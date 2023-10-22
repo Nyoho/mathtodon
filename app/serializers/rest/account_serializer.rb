@@ -14,6 +14,7 @@ class REST::AccountSerializer < ActiveModel::Serializer
 
   attribute :suspended, if: :suspended?
   attribute :silenced, key: :limited, if: :silenced?
+  attribute :noindex, if: :local?
 
   class AccountDecorator < SimpleDelegator
     def self.model_name
@@ -113,7 +114,11 @@ class REST::AccountSerializer < ActiveModel::Serializer
     object.silenced?
   end
 
-  delegate :suspended?, :silenced?, to: :object
+  def noindex
+    object.user_prefers_noindex?
+  end
+
+  delegate :suspended?, :silenced?, :local?, to: :object
 
   def moved_and_not_nested?
     object.moved?

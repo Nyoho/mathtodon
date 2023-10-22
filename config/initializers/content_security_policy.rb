@@ -40,7 +40,7 @@ Rails.application.config.content_security_policy do |p|
     p.worker_src  :self, :blob, assets_host
   else
     p.connect_src :self, :data, :blob, assets_host, media_host, Rails.configuration.x.streaming_api_base_url, cloudflarecdn, mathjax
-    p.script_src  :self, :unsafe_inline, assets_host, cloudflarecdn, mathjax
+    p.script_src  :self, :unsafe_inline, assets_host, "'wasm-unsafe-eval'", cloudflarecdn, mathjax
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
   end
