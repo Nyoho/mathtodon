@@ -12,8 +12,9 @@ class FollowMigrationService < FollowService
     follow    = source_account.active_relationships.find_by(target_account: old_target_account)
     reblogs   = follow&.show_reblogs?
     notify    = follow&.notify?
+    languages = follow&.languages
 
-    super(source_account, target_account, reblogs: reblogs, notify: notify, bypass_locked: bypass_locked, bypass_limit: true)
+    super(source_account, target_account, reblogs: reblogs, notify: notify, languages: languages, bypass_locked: bypass_locked, bypass_limit: true)
   end
 
   private
@@ -35,9 +36,5 @@ class FollowMigrationService < FollowService
     follow = super
     UnfollowService.new.call(@source_account, @old_target_account, skip_unmerge: true)
     follow
-  end
-
-  def follow_options
-    @options.slice(:reblogs, :notify)
   end
 end
