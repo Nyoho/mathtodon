@@ -8,7 +8,7 @@ gem 'rexml', '~> 3.2'
 
 gem 'puma', '~> 5.6'
 gem 'rails', '~> 6.1.7'
-gem 'sprockets', '~> 3.7.2'
+gem 'sprockets', '~> 4.2.1'
 gem 'thor', '~> 1.2'
 gem 'rack', '~> 2.2.4'
 
