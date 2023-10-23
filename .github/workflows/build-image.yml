@@ -34,7 +34,6 @@ jobs:
         id: meta
         with:
           images: |
-            Nyoho/mathtodon
             ghcr.io/Nyoho/mathtodon
           flavor: |
             latest=auto
