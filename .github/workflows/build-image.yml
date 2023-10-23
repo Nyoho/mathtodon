@@ -28,7 +28,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-        if: github.repository == 'Nyoho/mathtoton' && github.event_name != 'pull_request'
+        if: github.repository == 'Nyoho/mathtodon' && github.event_name != 'pull_request'
 
       - uses: docker/metadata-action@v4
         id: meta
