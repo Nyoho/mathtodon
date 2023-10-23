@@ -39,7 +39,7 @@ jobs:
           flavor: |
             latest=auto
           tags: |
-            type=edge,branch=main
+            type=edge,branch=mathtodon
             type=pep440,pattern={{raw}}
             type=pep440,pattern=v{{major}}.{{minor}}
             type=ref,event=pr
