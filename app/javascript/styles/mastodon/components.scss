@@ -939,8 +939,7 @@ $blackboardcolor: #315653;
     background-color: darken($blackboardcolor, 10%);
     $bb-wood-width: 4px;
     border: $bb-wood-width solid #423325 !important;
-    padding: 15px - $bb-wood-width 15px - $bb-wood-width 15px - $bb-wood-width 78px - $bb-wood-width !important;
-    // padding: 4px 6px 4px 68px !important;
+    padding: 16px - $bb-wood-width !important;
     &:after {
         content: "";
         position: absolute;
