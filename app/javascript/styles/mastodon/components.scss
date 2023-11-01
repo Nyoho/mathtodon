@@ -928,45 +928,50 @@
 }
 
 .MathJax_Display {
-    overflow-x: auto;
-    overflow-y: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 $blackboardcolor: #103212;
-$blackboardcolor: #3A5849;
+$blackboardcolor: #3a5849;
 $blackboardcolor: #315653;
+
 .mathjaxified__content {
-    background-color: darken($blackboardcolor, 10%);
-    $bb-wood-width: 4px;
-    border: $bb-wood-width solid #423325 !important;
-    padding: 16px - $bb-wood-width !important;
-    &:after {
-        content: "";
-        position: absolute;
-        bottom: 0px;
-        right: 10px;
-        height: 5px;
-        width: 12px;
-        background-color: rgb(107, 55, 32);
-        border-bottom: 1px solid #14128a;
-    }
-    &:before {
-        content: "";
-        position: absolute;
-        bottom: 0px;
-        right: 29px;
-        height: 1px;
-        width: 6px;
-        background-color: #939393;
-    }
-    .status__avatar {
-        left: 15px - $bb-wood-width !important;
-        top: 17px - $bb-wood-width !important;
-    }
+  background-color: darken($blackboardcolor, 10%);
+  $bb-wood-width: 4px;
+
+  border: $bb-wood-width solid #423325 !important;
+  padding: 16px - $bb-wood-width !important;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    height: 5px;
+    width: 12px;
+    background-color: rgb(107, 55, 32);
+    border-bottom: 1px solid #14128a;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 29px;
+    height: 1px;
+    width: 6px;
+    background-color: #939393;
+  }
+
+  .status__avatar {
+    left: 15px - $bb-wood-width !important;
+    top: 17px - $bb-wood-width !important;
+  }
 }
 
 article:has(.mathjaxified__content) + article:has(.mathjaxified__content) { // TODO: CSS 4
-    border-top: 0px !important;
+  border-top: 0 !important;
 }
 
 .announcements__item__content {
