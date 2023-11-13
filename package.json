@@ -33,7 +33,7 @@
     "@babel/runtime": "^7.19.4",
     "@gamestdio/websocket": "^0.3.2",
     "@github/webauthn-json": "^0.5.7",
-    "@rails/ujs": "^6.1.7",
+    "@rails/ujs": "^7.1.2",
     "abortcontroller-polyfill": "^1.7.5",
     "array-includes": "^3.1.5",
     "arrow-key-navigation": "^1.2.0",
