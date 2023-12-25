@@ -682,7 +682,7 @@ GEM
       unf (~> 0.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    tzinfo-data (1.2022.4)
+    tzinfo-data (1.2023.4)
       tzinfo (>= 1.0.0)
     unf (0.1.4)
       unf_ext
@@ -850,7 +850,7 @@ DEPENDENCIES
   thor (~> 1.2)
   tty-prompt (~> 0.23)
   twitter-text (~> 3.1.0)
-  tzinfo-data (~> 1.2022)
+  tzinfo-data (~> 1.2023)
   webauthn (~> 2.5)
   webmock (~> 3.18)
   webpacker (~> 5.4)
