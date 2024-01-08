@@ -9448,10 +9448,10 @@ react-overlays@^0.9.3:
     react-transition-group "^2.2.1"
     warning "^3.0.0"
 
-react-redux-loading-bar@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/react-redux-loading-bar/-/react-redux-loading-bar-5.0.4.tgz#06dffcc53a447828dec1a26903e6b22807dd4254"
-  integrity sha512-ttLFYETh9zfyxJdTa5a1+KTWquxX3UN7F/XYslNTeCE8cpnWNpBbUOg8TcaZmOoWEWjCe/i5sV/Mvvr0xsGBBw==
+react-redux-loading-bar@^5.0.8:
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/react-redux-loading-bar/-/react-redux-loading-bar-5.0.8.tgz#436cdc49a21ac4a2a012ab0511ec488aa4a29513"
+  integrity sha512-fCDt2uN1nJ/OD0GtA87TFQ8ochW5Q0IFcLTP/CfN1bFVty9wYQ62nG42m9n884KCQ6dsiW5Mk6DvQEKEHCGJJQ==
   dependencies:
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.4"
