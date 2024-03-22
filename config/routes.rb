@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'sidekiq_unique_jobs/web'
+require 'sidekiq_unique_jobs/web' if ENV['ENABLE_SIDEKIQ_UNIQUE_JOBS_UI'] == true
 require 'sidekiq-scheduler/web'
 
 Rails.application.routes.draw do
@@ -273,7 +273,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :instances, only: [:index, :show, :destroy], constraints: { id: /[^\/]+/ } do
+    resources :instances, only: [:index, :show, :destroy], constraints: { id: /[^\/]+/ }, format: 'html' do
       member do
         post :clear_delivery_errors
         post :restart_delivery
