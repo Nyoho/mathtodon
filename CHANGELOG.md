@@ -3,6 +3,123 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+## End of life notice
+
+**The 4.0.x branch has reached its end of life and will not receive any further update.**
+This means that no security fix will be made available for this branch after this date, and you will need to update to a more recent version (such as the 4.2.x branch) to receive security fixes.
+
+## [4.0.15] - 2024-02-16
+
+### Fixed
+
+- Fix OmniAuth tests and edge cases in error handling ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/29201), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/29207))
+
+### Security
+
+- Fix insufficient checking of remote posts ([GHSA-jhrq-qvrm-qr36](https://github.com/mastodon/mastodon/security/advisories/GHSA-jhrq-qvrm-qr36))
+
+## [4.0.14] - 2024-02-14
+
+### Security
+
+- Update the `sidekiq-unique-jobs` dependency (see [GHSA-cmh9-rx85-xj38](https://github.com/mhenrixon/sidekiq-unique-jobs/security/advisories/GHSA-cmh9-rx85-xj38))
+  In addition, we have disabled the web interface for `sidekiq-unique-jobs` out of caution.
+  If you need it, you can re-enable it by setting `ENABLE_SIDEKIQ_UNIQUE_JOBS_UI=true`.
+  If you only need to clear all locks, you can now use `bundle exec rake sidekiq_unique_jobs:delete_all_locks`.
+- Update the `nokogiri` dependency (see [GHSA-xc9x-jj77-9p9j](https://github.com/sparklemotion/nokogiri/security/advisories/GHSA-xc9x-jj77-9p9j))
+- Disable administrative Doorkeeper routes ([ThisIsMissEm](https://github.com/mastodon/mastodon/pull/29187))
+- Fix ongoing streaming sessions not being invalidated when applications get deleted in some cases ([GHSA-7w3c-p9j8-mq3x](https://github.com/mastodon/mastodon/security/advisories/GHSA-7w3c-p9j8-mq3x))
+  In some rare cases, the streaming server was not notified of access tokens revocation on application deletion.
+- Change external authentication behavior to never reattach a new identity to an existing user by default ([GHSA-vm39-j3vx-pch3](https://github.com/mastodon/mastodon/security/advisories/GHSA-vm39-j3vx-pch3))
+  Up until now, Mastodon has allowed new identities from external authentication providers to attach to an existing local user based on their verified e-mail address.
+  This allowed upgrading users from a database-stored password to an external authentication provider, or move from one authentication provider to another.
+  However, this behavior may be unexpected, and means that when multiple authentication providers are configured, the overall security would be that of the least secure authentication provider.
+  For these reasons, this behavior is now locked under the `ALLOW_UNSAFE_AUTH_PROVIDER_REATTACH` environment variable.
+  In addition, regardless of this environment variable, Mastodon will refuse to attach two identities from the same authentication provider to the same account.
+
+## [4.0.13] - 2024-02-01
+
+### Security
+
+- Fix insufficient origin validation (CVE-2024-23832, [GHSA-3fjr-858r-92rw](https://github.com/mastodon/mastodon/security/advisories/GHSA-3fjr-858r-92rw))
+
+## [4.0.12] - 2023-10-10
+
+### Changed
+
+- Change some worker lock TTLs to be shorter-lived ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27246))
+- Change user archive export allowed period from 7 days to 6 days ([suddjian](https://github.com/mastodon/mastodon/pull/27200))
+
+### Fixed
+
+- Fix mentions being matched in some URL query strings ([mjankowski](https://github.com/mastodon/mastodon/pull/25656))
+- Fix multiple instances of the trend refresh scheduler sometimes running at once ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27253))
+- Fix importer returning negative row estimates ([jgillich](https://github.com/mastodon/mastodon/pull/27258))
+- Fix filtering audit log for entries about disabling 2FA ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27186))
+- Fix tIME chunk not being properly removed from PNG uploads ([TheEssem](https://github.com/mastodon/mastodon/pull/27111))
+- Fix inefficient queries in “Follows and followers” as well as several admin pages ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27116), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/27306))
+
+## [4.0.11] - 2023-09-20
+
+### Fixed
+
+- Fix post translation erroring out ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26990))
+
+## [4.0.10] - 2023-09-19
+
+### Fixed
+
+- Fix moderator rights inconsistencies ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26729))
+- Fix crash when encountering invalid URL ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26814))
+- Fix cached posts including stale stats ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26409))
+- Fix uploading of video files for which `ffprobe` reports `0/0` average framerate ([NicolaiSoeborg](https://github.com/mastodon/mastodon/pull/26500))
+- Fix unexpected audio stream transcoding when uploaded video is eligible to passthrough ([yufushiro](https://github.com/mastodon/mastodon/pull/26608))
+
+### Security
+
+- Fix missing HTML sanitization in translation API (CVE-2023-42452)
+- Fix incorrect domain name normalization (CVE-2023-42451)
+
+## [4.0.9] - 2023-09-05
+
+### Changed
+
+- Change remote report processing to accept reports with long comments, but truncate them ([ThisIsMissEm](https://github.com/mastodon/mastodon/pull/25028))
+
+### Fixed
+
+- **Fix blocking subdomains of an already-blocked domain** ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26392))
+- Fix `/api/v1/timelines/tag/:hashtag` allowing for unauthenticated access when public preview is disabled ([danielmbrasil](https://github.com/mastodon/mastodon/pull/26237))
+- Fix inefficiencies in `PlainTextFormatter` ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26727))
+
+## [4.0.8] - 2023-07-31
+
+### Fixed
+
+- Fix memory leak in streaming server ([ThisIsMissEm](https://github.com/mastodon/mastodon/pull/26228))
+- Fix wrong filters sometimes applying in streaming ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26159), [ThisIsMissEm](https://github.com/mastodon/mastodon/pull/26213), [renchap](https://github.com/mastodon/mastodon/pull/26233))
+- Fix incorrect connect timeout in outgoing requests ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26116))
+
+## [4.0.7] - 2023-07-21
+
+### Added
+
+- Add check preventing Sidekiq workers from running with Makara configured ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/25850))
+
+### Changed
+
+- Change request timeout handling to use a longer deadline ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26055))
+
+### Fixed
+
+- Fix moderation interface for remote instances with a .zip TLD ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/25886))
+- Fix remote accounts being possibly persisted to database with incomplete protocol values ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/25886))
+- Fix trending publishers table not rendering correctly on narrow screens ([vmstan](https://github.com/mastodon/mastodon/pull/25945))
+
+### Security
+
+- Fix CSP headers being unintentionally wide ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26105))
+
 ## [4.0.6] - 2023-07-07
 
 ### Fixed
