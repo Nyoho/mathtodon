@@ -56,7 +56,7 @@ jobs:
           BUILDER_NODE_1_AUTH_TLS_KEY: ${{ secrets.DOCKER_BUILDER_HETZNER_ARM64_01_KEY }}
 
       - name: Log in to Docker Hub
-        if: contains(inputs.push_to_images, 'tootsuite')
+        if: contains(inputs.push_to_images, 'Nyoho')
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
