@@ -170,7 +170,7 @@ class ActivityPub::ProcessAccountService < BaseService
   end
 
   def check_featured_collection!
-    ActivityPub::SynchronizeFeaturedCollectionWorker.perform_async(@account.id, { 'hashtag' => @json['featuredTags'].blank? })
+    ActivityPub::SynchronizeFeaturedCollectionWorker.perform_async(@account.id, { 'hashtag' => @json['featuredTags'].blank?, 'request_id' => @options[:request_id] })
   end
 
   def check_featured_tags_collection!
@@ -274,7 +274,7 @@ class ActivityPub::ProcessAccountService < BaseService
 
   def moved_account
     account   = ActivityPub::TagManager.instance.uri_to_resource(@json['movedTo'], Account)
-    account ||= ActivityPub::FetchRemoteAccountService.new.call(@json['movedTo'], break_on_redirect: true)
+    account ||= ActivityPub::FetchRemoteAccountService.new.call(@json['movedTo'], break_on_redirect: true, request_id: @options[:request_id])
     account
   end
 

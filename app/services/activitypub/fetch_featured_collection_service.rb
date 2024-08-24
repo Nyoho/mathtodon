@@ -23,9 +23,9 @@ class ActivityPub::FetchFeaturedCollectionService < BaseService
 
     case collection['type']
     when 'Collection', 'CollectionPage'
-      collection['items']
+      as_array(collection['items'])
     when 'OrderedCollection', 'OrderedCollectionPage'
-      collection['orderedItems']
+      as_array(collection['orderedItems'])
     end
   end
 
@@ -53,7 +53,7 @@ class ActivityPub::FetchFeaturedCollectionService < BaseService
 
       status.id
     rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.debug "Invalid pinned status #{uri}: #{e.message}"
+      Rails.logger.debug { "Invalid pinned status #{uri}: #{e.message}" }
       nil
     end
 

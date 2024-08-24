@@ -195,10 +195,16 @@ class User < ApplicationRecord
 
     super
 
-    if new_user && approved?
-      prepare_new_user!
-    elsif new_user
-      notify_staff_about_pending_account!
+    if new_user
+      # Avoid extremely unlikely race condition when approving and confirming
+      # the user at the same time
+      reload unless approved?
+
+      if approved?
+        prepare_new_user!
+      else
+        notify_staff_about_pending_account!
+      end
     end
   end
 
@@ -209,7 +215,13 @@ class User < ApplicationRecord
     skip_confirmation!
     save!
 
-    prepare_new_user! if new_user && approved?
+    if new_user
+      # Avoid extremely unlikely race condition when approving and confirming
+      # the user at the same time
+      reload unless approved?
+
+      prepare_new_user! if approved?
+    end
   end
 
   def update_sign_in!(new_sign_in: false)
@@ -237,7 +249,11 @@ class User < ApplicationRecord
   end
 
   def functional?
-    confirmed? && approved? && !disabled? && !account.suspended? && !account.memorial? && account.moved_to_account_id.nil?
+    functional_or_moved? && account.moved_to_account_id.nil?
+  end
+
+  def functional_or_moved?
+    confirmed? && approved? && !disabled? && !account.suspended? && !account.memorial?
   end
 
   def unconfirmed?
@@ -249,14 +265,18 @@ class User < ApplicationRecord
   end
 
   def inactive_message
-    !approved? ? :pending : super
+    approved? ? super : :pending
   end
 
   def approve!
     return if approved?
 
     update!(approved: true)
-    prepare_new_user!
+
+    # Avoid extremely unlikely race condition when approving and confirming
+    # the user at the same time
+    reload unless confirmed?
+    prepare_new_user! if confirmed?
   end
 
   def otp_enabled?
@@ -496,6 +516,7 @@ class User < ApplicationRecord
     ActivityTracker.increment('activity:accounts:local')
     ActivityTracker.record('activity:logins', id)
     UserMailer.welcome(self).deliver_later
+    TriggerWebhookWorker.perform_async('account.approved', 'Account', account_id)
   end
 
   def prepare_returning_user!
@@ -529,7 +550,7 @@ class User < ApplicationRecord
   end
 
   def invite_text_required?
-    Setting.require_invite_text && !invited? && !external? && !bypass_invite_request_check?
+    Setting.require_invite_text && !open_registrations? && !invited? && !external? && !bypass_invite_request_check?
   end
 
   def trigger_webhooks
