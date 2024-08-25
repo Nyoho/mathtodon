@@ -184,6 +184,7 @@ GEM
     crass (1.0.6)
     css_parser (1.7.1)
       addressable
+    date (3.3.3)
     debug_inspector (1.0.0)
     devise (4.8.1)
       bcrypt (~> 3.0)
@@ -223,7 +224,7 @@ GEM
       faraday (~> 1)
       multi_json
     encryptor (3.0.0)
-    erubi (1.11.0)
+    erubi (1.12.0)
     et-orbi (1.2.7)
       tzinfo
     excon (0.76.0)
@@ -282,8 +283,8 @@ GEM
       addressable (~> 2.7)
       omniauth (>= 1.9, < 3)
       openid_connect (~> 1.2)
-    globalid (1.0.1)
-      activesupport (>= 5.0)
+    globalid (1.2.1)
+      activesupport (>= 6.1)
     hamlit (2.13.0)
       temple (>= 0.8.2)
       thor
@@ -382,11 +383,14 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.21.3)
+    loofah (2.21.4)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    mail (2.7.1)
+    mail (2.8.1)
       mini_mime (>= 0.1.1)
+      net-imap
+      net-pop
+      net-smtp
     makara (0.5.1)
       activerecord (>= 5.2.0)
     marcel (1.0.2)
@@ -407,9 +411,18 @@ GEM
     msgpack (1.5.4)
     multi_json (1.15.0)
     multipart-post (2.1.1)
+    net-imap (0.4.2)
+      date
+      net-protocol
     net-ldap (0.17.1)
+    net-pop (0.1.2)
+      net-protocol
+    net-protocol (0.2.1)
+      timeout
     net-scp (4.0.0.rc1)
       net-ssh (>= 2.6.5, < 8.0.0)
+    net-smtp (0.4.0)
+      net-protocol
     net-ssh (7.0.1)
     nio4r (2.5.9)
     nokogiri (1.16.2)
@@ -517,11 +530,13 @@ GEM
       actionpack (>= 5.0.1.rc1)
       actionview (>= 5.0.1.rc1)
       activesupport (>= 5.0.1.rc1)
-    rails-dom-testing (2.0.3)
-      activesupport (>= 4.2.0)
+    rails-dom-testing (2.2.0)
+      activesupport (>= 5.0.0)
+      minitest
       nokogiri (>= 1.6)
-    rails-html-sanitizer (1.4.4)
-      loofah (~> 2.19, >= 2.19.1)
+    rails-html-sanitizer (1.6.0)
+      loofah (~> 2.21)
+      nokogiri (~> 1.14)
     rails-i18n (6.0.0)
       i18n (>= 0.7, < 2)
       railties (>= 6.0.0, < 7)
@@ -664,6 +679,7 @@ GEM
       climate_control (>= 0.0.3, < 1.0)
     thor (1.2.2)
     tilt (2.0.11)
+    timeout (0.4.0)
     tpm-key_attestation (0.11.0)
       bindata (~> 2.4)
       openssl (> 2.0, < 3.1)
