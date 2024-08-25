@@ -26,7 +26,7 @@ const isMathjaxifyable = str => {
   return [ /\$\$(.*?)\$\$/g, /\$(.*?)\$/g, /\\\((.*?)\\\)/g, /\\\[(.*?)\\\]/g, /\\begin\{.+?\}(.*?)\\end\{.+?\}/g]
     .map( r => str.match(r))
     .reduce((prev, elem) => prev || elem, null);
-}
+};
 
 export const textForScreenReader = (intl, status, rebloggedByText = false) => {
   const displayName = status.getIn(['account', 'display_name']);

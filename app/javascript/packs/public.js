@@ -1,6 +1,7 @@
 import './public-path';
 import escapeTextContentForBrowser from 'escape-html';
 import loadPolyfills from '../mastodon/load_polyfills';
+
 var loadScript = require('load-script');
 
 import ready from '../mastodon/ready';
@@ -37,37 +38,38 @@ function main() {
   const ReactDOM = require('react-dom');
   const { createBrowserHistory } = require('history');
 
+  /* global MathJax */
   loadScript('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function () {
     const options = {
       tex2jax: {
-	    inlineMath: [ ['$','$'], ['\\(','\\)'] ]
+        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
       },
       TeX: {
-        extensions: ["AMScd.js"]
+        extensions: ['AMScd.js'],
       },
       skipStartupTypeset: true,
       showProcessingMessages: false,
-      messageStyle: "none",
+      messageStyle: 'none',
       showMathMenu: true,
       showMathMenuMSIE: true,
-      "SVG": {
-	    font:
-	    "TeX"
-	    // "STIX-Web"
-	    // "Asana-Math"
-	    // "Neo-Euler"
-	    // "Gyre-Pagella"
-	    // "Gyre-Termes"
-	    // "Latin-Modern"
+      'SVG': {
+        font:
+        'TeX',
+        // 'STIX-Web'
+        // 'Asana-Math'
+        // 'Neo-Euler'
+        // 'Gyre-Pagella'
+        // 'Gyre-Termes'
+        // 'Latin-Modern'
       },
-      "HTML-CSS": {
-	    availableFonts: ["TeX"],
-	    preferredFont: "TeX",
-	    webFont: "TeX"
-      }
+      'HTML-CSS': {
+        availableFonts: ['TeX'],
+        preferredFont: 'TeX',
+        webFont: 'TeX',
+      },
     };
     MathJax.Hub.Config(options);
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, ""]);
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, '']);
   });
 
   const scrollToDetailedStatus = () => {

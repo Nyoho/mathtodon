@@ -24,9 +24,9 @@ import Icon from 'mastodon/components/icon';
 import { Spring } from 'react-spring/renderprops';
 
 const isMathjaxifyable = str =>
-      [ /\$\$([\s\S]+?)\$\$/g, /\$([\s\S]+?)\$/g, /\\\(([\s\S]+?)\\\)/g, /\\\[([\s\S]+?)\\\]/g]
-      .map( r => str.match(r))
-      .reduce((prev, elem) => prev || elem, false);
+  [ /\$\$([\s\S]+?)\$\$/g, /\$([\s\S]+?)\$/g, /\\\(([\s\S]+?)\\\)/g, /\\\[([\s\S]+?)\\\]/g]
+    .map( r => str.match(r))
+    .reduce((prev, elem) => prev || elem, false);
 
 const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
 
@@ -304,12 +304,13 @@ class ComposeForm extends ImmutablePureComponent {
           </div>
         </div>
         <Spring
-          config={{tension: 273, friction: 17, mass: 0.8 }}
+          config={{ tension: 273, friction: 17, mass: 0.8 }}
           from={{ opacity: flag ? 0 : 1, transform: flag ? 'scale(0)' : 'scale(1)' }}
-          to=  {{ opacity: flag ? 1 : 0, transform: flag ? 'scale(1)' : 'scale(0)' }}>
-          {props => <div style={props} className='compose-form__live-preview'>
-                      <LivePreview text={this.props.text} />
-                    </div>
+          to={{ opacity: flag ? 1 : 0, transform: flag ? 'scale(1)' : 'scale(0)' }}
+        >
+          {props => (<div style={props} className='compose-form__live-preview'>
+            <LivePreview text={this.props.text} />
+          </div>)
           }
         </Spring>
       </form>
