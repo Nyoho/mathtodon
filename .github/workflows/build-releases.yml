@@ -22,6 +22,9 @@ jobs:
       flavor: |
         latest=false
       tags: |
+        type=edge,branch=mathtodon
         type=pep440,pattern={{raw}}
         type=pep440,pattern=v{{major}}.{{minor}}
+        type=ref,event=tag
+        type=ref,event=pr
     secrets: inherit
