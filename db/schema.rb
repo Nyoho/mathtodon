@@ -181,6 +181,7 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.integer "avatar_storage_schema_version"
     t.integer "header_storage_schema_version"
     t.string "devices_url"
+    t.integer "suspension_origin"
     t.datetime "sensitized_at"
     t.boolean "trendable"
     t.datetime "reviewed_at"
