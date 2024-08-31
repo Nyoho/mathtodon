@@ -87,8 +87,22 @@ describe InstancePresenter do
   end
 
   describe '#source_url' do
-    it 'returns "https://github.com/mastodon/mastodon"' do
+    before do
+      @original_github_repository = ENV['GITHUB_REPOSITORY']
+    end
+
+    after do
+      ENV['GITHUB_REPOSITORY'] = @original_github_repository
+    end
+
+    it 'returns "https://github.com/mastodon/mastodon" if GITHUB_REPOSITORY is not set' do
+      ENV['GITHUB_REPOSITORY'] = nil
       expect(instance_presenter.source_url).to eq('https://github.com/mastodon/mastodon')
+    end
+
+    it 'returns "https://github.com/<GITHUB_REPOSITORY>" if GITHUB_REPOSITORY is set' do
+      ENV['GITHUB_REPOSITORY'] = 'username/repositoryname'
+      expect(instance_presenter.source_url).to eq('https://github.com/username/repositoryname')
     end
   end
 
