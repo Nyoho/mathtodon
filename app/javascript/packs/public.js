@@ -1,6 +1,7 @@
 import './public-path';
 import escapeTextContentForBrowser from 'escape-html';
 import loadPolyfills from '../mastodon/load_polyfills';
+
 var loadScript = require('load-script');
 
 import ready from '../mastodon/ready';
@@ -37,37 +38,38 @@ function main() {
   const ReactDOM = require('react-dom');
   const { createBrowserHistory } = require('history');
 
+  /* global MathJax */
   loadScript('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function () {
     const options = {
       tex2jax: {
-	    inlineMath: [ ['$','$'], ['\\(','\\)'] ]
+        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
       },
       TeX: {
-        extensions: ["AMScd.js"]
+        extensions: ['AMScd.js'],
       },
       skipStartupTypeset: true,
       showProcessingMessages: false,
-      messageStyle: "none",
+      messageStyle: 'none',
       showMathMenu: true,
       showMathMenuMSIE: true,
-      "SVG": {
-	    font:
-	    "TeX"
-	    // "STIX-Web"
-	    // "Asana-Math"
-	    // "Neo-Euler"
-	    // "Gyre-Pagella"
-	    // "Gyre-Termes"
-	    // "Latin-Modern"
+      'SVG': {
+        font:
+        'TeX',
+        // 'STIX-Web'
+        // 'Asana-Math'
+        // 'Neo-Euler'
+        // 'Gyre-Pagella'
+        // 'Gyre-Termes'
+        // 'Latin-Modern'
       },
-      "HTML-CSS": {
-	    availableFonts: ["TeX"],
-	    preferredFont: "TeX",
-	    webFont: "TeX"
-      }
+      'HTML-CSS': {
+        availableFonts: ['TeX'],
+        preferredFont: 'TeX',
+        webFont: 'TeX',
+      },
     };
     MathJax.Hub.Config(options);
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, ""]);
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, '']);
   });
 
   const scrollToDetailedStatus = () => {
@@ -98,6 +100,18 @@ function main() {
       minute: 'numeric',
     });
 
+    const dateFormat = new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      timeFormat: false,
+    });
+
+    const timeFormat = new Intl.DateTimeFormat(locale, {
+      timeStyle: 'short',
+      hour12: false,
+    });
+
     [].forEach.call(document.querySelectorAll('.emojify'), (content) => {
       content.innerHTML = emojify(content.innerHTML);
     });
@@ -108,6 +122,32 @@ function main() {
 
       content.title = formattedDate;
       content.textContent = formattedDate;
+    });
+
+    const isToday = date => {
+      const today = new Date();
+
+      return date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+    };
+    const todayFormat = new IntlMessageFormat(messages['relative_format.today'] || 'Today at {time}', locale);
+
+    [].forEach.call(document.querySelectorAll('time.relative-formatted'), (content) => {
+      const datetime = new Date(content.getAttribute('datetime'));
+
+      let formattedContent;
+
+      if (isToday(datetime)) {
+        const formattedTime = timeFormat.format(datetime);
+
+        formattedContent = todayFormat.format({ time: formattedTime });
+      } else {
+        formattedContent = dateFormat.format(datetime);
+      }
+
+      content.title = formattedContent;
+      content.textContent = formattedContent;
     });
 
     [].forEach.call(document.querySelectorAll('time.time-ago'), (content) => {

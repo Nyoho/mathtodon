@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_04_133904) do
+ActiveRecord::Schema.define(version: 2022_12_06_114142) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -181,6 +181,7 @@ ActiveRecord::Schema.define(version: 2022_11_04_133904) do
     t.integer "avatar_storage_schema_version"
     t.integer "header_storage_schema_version"
     t.string "devices_url"
+    t.integer "suspension_origin"
     t.datetime "sensitized_at"
     t.boolean "trendable"
     t.datetime "reviewed_at"

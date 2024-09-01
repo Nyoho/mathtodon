@@ -33,6 +33,14 @@ class Rack::Attack
       authenticated_token&.resource_owner_id
     end
 
+    def authenticated_token_id
+      authenticated_token&.id
+    end
+
+    def warden_user_id
+      @env['warden']&.user&.id
+    end
+
     def unauthenticated?
       !authenticated_user_id
     end
@@ -54,16 +62,16 @@ class Rack::Attack
     end
   end
 
-  Rack::Attack.safelist('allow from localhost') do |req|
-    req.remote_ip == '127.0.0.1' || req.remote_ip == '::1'
-  end
-
   Rack::Attack.blocklist('deny from blocklist') do |req|
     IpBlock.blocked?(req.remote_ip)
   end
 
-  throttle('throttle_authenticated_api', limit: 300, period: 5.minutes) do |req|
+  throttle('throttle_authenticated_api', limit: 1_500, period: 5.minutes) do |req|
     req.authenticated_user_id if req.api_request?
+  end
+
+  throttle('throttle_per_token_api', limit: 300, period: 5.minutes) do |req|
+    req.authenticated_token_id if req.api_request?
   end
 
   throttle('throttle_unauthenticated_api', limit: 300, period: 5.minutes) do |req|
@@ -127,6 +135,10 @@ class Rack::Attack
 
   throttle('throttle_login_attempts/email', limit: 25, period: 1.hour) do |req|
     req.session[:attempt_user_id] || req.params.dig('user', 'email').presence if req.post? && req.path_matches?('/auth/sign_in')
+  end
+
+  throttle('throttle_password_change/account', limit: 10, period: 10.minutes) do |req|
+    req.warden_user_id if (req.put? || req.patch?) && (req.path_matches?('/auth') || req.path_matches?('/auth/password'))
   end
 
   self.throttled_responder = lambda do |request|

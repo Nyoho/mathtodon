@@ -160,7 +160,7 @@ RSpec.describe Account, type: :model do
         expect(account.avatar_remote_url).to eq 'https://remote.test/invalid_avatar'
         expect(account.header_remote_url).to eq expectation.header_remote_url
         expect(account.avatar_file_name).to  eq nil
-        expect(account.header_file_name).to  eq nil
+        expect(account.header_file_name).to  eq expectation.header_file_name
       end
     end
   end
@@ -658,6 +658,12 @@ RSpec.describe Account, type: :model do
     end
   end
 
+  describe '.requested_by_map' do
+    it 'returns an hash' do
+      expect(Account.requested_by_map([], 1)).to be_a Hash
+    end
+  end
+
   describe 'MENTION_RE' do
     subject { Account::MENTION_RE }
 
@@ -691,6 +697,14 @@ RSpec.describe Account, type: :model do
 
     it 'does not match URL query string' do
       expect(subject.match('https://example.com/?x=@alice')).to be_nil
+    end
+
+    it 'matches usernames immediately following the letter ß' do
+      expect(subject.match('Hello toß @alice from me')[1]).to eq 'alice'
+    end
+
+    it 'matches usernames containing uppercase characters' do
+      expect(subject.match('Hello to @aLice@Example.com from me')[1]).to eq 'aLice@Example.com'
     end
   end
 

@@ -12,16 +12,19 @@ jobs:
   build-image:
     uses: ./.github/workflows/build-container-image.yml
     with:
-      platforms: linux/amd64,linux/arm64
+      platforms: linux/amd64
       use_native_arm64_builder: true
       push_to_images: |
-        tootsuite/mastodon
-        ghcr.io/mastodon/mastodon
+        Nyoho/mathtodon
+        ghcr.io/Nyoho/mathtodon
       # Do not use cache when building releases, so apt update is always ran and the release always contain the latest packages
       cache: false
       flavor: |
         latest=false
       tags: |
+        type=edge,branch=mathtodon
         type=pep440,pattern={{raw}}
         type=pep440,pattern=v{{major}}.{{minor}}
+        type=ref,event=tag
+        type=ref,event=pr
     secrets: inherit

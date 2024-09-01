@@ -248,21 +248,26 @@ class LinkDetailsExtractor
 
         structured_data
       rescue Oj::ParseError, EncodingError
-        Rails.logger.debug("Invalid JSON-LD in #{@original_url}")
+        Rails.logger.debug { "Invalid JSON-LD in #{@original_url}" }
         next
       end.first
     end
   end
 
   def document
-    @document ||= Nokogiri::HTML(@html, nil, encoding)
+    @document ||= detect_encoding_and_parse_document
   end
 
-  def encoding
-    @encoding ||= begin
-      guess = detector.detect(@html, @html_charset)
-      guess&.fetch(:confidence, 0).to_i > 60 ? guess&.fetch(:encoding, nil) : nil
+  def detect_encoding_and_parse_document
+    [detect_encoding, nil, @html_charset, 'UTF-8'].uniq.each do |encoding|
+      document = Nokogiri::HTML(@html, nil, encoding)
+      return document if document.to_s.valid_encoding?
     end
+  end
+
+  def detect_encoding
+    guess = detector.detect(@html, @html_charset)
+    guess&.fetch(:confidence, 0).to_i > 60 ? guess&.fetch(:encoding, nil) : nil
   end
 
   def detector

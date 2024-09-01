@@ -159,7 +159,7 @@ RSpec.describe Admin::AccountsController, type: :controller do
     end
 
     context 'when user is admin' do
-      let(:role) { 'admin' }
+      let(:role) { UserRole.find_by(name: 'Admin') }
 
       it 'succeeds in approving account' do
         is_expected.to redirect_to admin_accounts_path(status: 'pending')
@@ -179,7 +179,7 @@ RSpec.describe Admin::AccountsController, type: :controller do
     end
 
     context 'when user is not admin' do
-      let(:role) { 'user' }
+      let(:role) { UserRole.everyone }
 
       it 'fails to approve account' do
         is_expected.to have_http_status :forbidden
@@ -200,7 +200,7 @@ RSpec.describe Admin::AccountsController, type: :controller do
     end
 
     context 'when user is admin' do
-      let(:role) { 'admin' }
+      let(:role) { UserRole.find_by(name: 'Admin') }
 
       it 'succeeds in rejecting account' do
         is_expected.to redirect_to admin_accounts_path(status: 'pending')
@@ -219,7 +219,7 @@ RSpec.describe Admin::AccountsController, type: :controller do
     end
 
     context 'when user is not admin' do
-      let(:role) { 'user' }
+      let(:role) { UserRole.everyone }
 
       it 'fails to reject account' do
         is_expected.to have_http_status :forbidden

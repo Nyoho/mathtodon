@@ -61,6 +61,7 @@ class Api::V1::Admin::AccountsController < Api::BaseController
   def reject
     authorize @account.user, :reject?
     DeleteAccountService.new.call(@account, reserve_email: false, reserve_username: false)
+    log_action :reject, @account.user
     render_empty
   end
 

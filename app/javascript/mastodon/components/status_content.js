@@ -8,46 +8,8 @@ import PollContainer from 'mastodon/containers/poll_container';
 import Icon from 'mastodon/components/icon';
 import { autoPlayGif, languages as preloadedLanguages, translationEnabled } from 'mastodon/initial_state';
 
+/* global MathJax */
 const loadScriptOnce = require('load-script-once');
-
-function mapAlternate(array, fn1, fn2, thisArg) {
-    var fn = fn1, output = [];
-    for (var i=0; i<array.length; i++){
-	output[i] = fn.call(thisArg, array[i], i, array);
-	fn = fn === fn1 ? fn2 : fn1;
-    }
-    return output;
-}
-
-const componentToString = c => {
-    let aDom = document.createElement('span');
-    var finished = false;
-    ReactDOM.render(c, aDom, () => {
-	finished = true;
-    });
-    while(finished == false) { }
-    
-    const s = aDom.outerHTML;
-    console.log([aDom,s]);
-    result = s;
-
-    return s;
-};
-
-const mathjaxify = str => {
-    var s = mapAlternate(str.split(/\$\$/g),
-	x => x,
-	x => componentToString(<MathJax.Context><MathJax.Node>{x}</MathJax.Node></MathJax.Context>)).join("");
-    s = mapAlternate(s.split(/\$/g),
-	x => x,
-	x => componentToString(<MathJax.Context><MathJax.Node inline>{x}</MathJax.Node></MathJax.Context>)).join("");
-    s = s.replace(/\\\((.*?)\\\)/g,
-	componentToString(<MathJax.Context><MathJax.Node inline>{"$1"}</MathJax.Node></MathJax.Context>))
-    .replace(/\\\[(.*?)\\\]/g,
-	componentToString(<MathJax.Context><MathJax.Node>{"$1"}</MathJax.Node></MathJax.Context>));
-    console.log(s);
-    return s;
-};
 
 const MAX_HEIGHT = 706; // 22px * 32 (+ 2px padding at the top)
 
@@ -147,42 +109,40 @@ class StatusContent extends React.PureComponent {
       }
     }
 
-    loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
-	               (err, script) => {
-	                 if (err) {
-	                 } else {
-		               const options = {
-		                 tex2jax: {
-			               inlineMath: [ ['$','$'], ['\\(','\\)'] ]
-		                 },
-                         TeX: {
-                           extensions: ["AMScd.js"]
-                         },
-		                 skipStartupTypeset: true,
-		                 showProcessingMessages: false,
-		                 messageStyle: "none",
-		                 showMathMenu: true,
-		                 showMathMenuMSIE: true,
-		                 "SVG": {
-			               font:
-			               "TeX"
-			               // "STIX-Web"
-			               // "Asana-Math"
-			               // "Neo-Euler"
-			               // "Gyre-Pagella"
-			               // "Gyre-Termes"
-			               // "Latin-Modern"
-		                 },
-		                 "HTML-CSS": {
-			               availableFonts: ["TeX"],
-			               preferredFont: "TeX",
-			               webFont: "TeX"
-		                 }
-		               };
-		               MathJax.Hub.Config(options);
-		               MathJax.Hub.Queue(["Typeset", MathJax.Hub, node]);
-	                 }
-	               });
+    loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
+      .then(() => {
+        const options = {
+          tex2jax: {
+            inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+          },
+          TeX: {
+            extensions: ['AMScd.js'],
+          },
+          skipStartupTypeset: true,
+          showProcessingMessages: false,
+          messageStyle: 'none',
+          showMathMenu: true,
+          showMathMenuMSIE: true,
+          'SVG': {
+            font:
+            'TeX',
+            // "STIX-Web"
+            // "Asana-Math"
+            // "Neo-Euler"
+            // "Gyre-Pagella"
+            // "Gyre-Termes"
+            // "Latin-Modern"
+          },
+          'HTML-CSS': {
+            availableFonts: ['TeX'],
+            preferredFont: 'TeX',
+            webFont: 'TeX',
+          },
+        };
+        MathJax.Hub.Config(options);
+        MathJax.Hub.Queue(['Typeset', MathJax.Hub, node]);
+      })
+      .catch(err => console.error('failed to load!', err));
 
 
     if (status.get('collapsed', null) === null && onCollapsedToggle) {
@@ -209,7 +169,7 @@ class StatusContent extends React.PureComponent {
       let emoji = emojis[i];
       emoji.src = emoji.getAttribute('data-original');
     }
-  }
+  };
 
   handleMouseLeave = ({ currentTarget }) => {
     if (autoPlayGif) {
@@ -222,7 +182,7 @@ class StatusContent extends React.PureComponent {
       let emoji = emojis[i];
       emoji.src = emoji.getAttribute('data-static');
     }
-  }
+  };
 
   componentDidMount () {
     this._updateStatusLinks();
@@ -237,7 +197,7 @@ class StatusContent extends React.PureComponent {
       e.preventDefault();
       this.context.router.history.push(`/@${mention.get('acct')}`);
     }
-  }
+  };
 
   onHashtagClick = (hashtag, e) => {
     hashtag = hashtag.replace(/^#/, '');
@@ -246,11 +206,11 @@ class StatusContent extends React.PureComponent {
       e.preventDefault();
       this.context.router.history.push(`/tags/${hashtag}`);
     }
-  }
+  };
 
   handleMouseDown = (e) => {
     this.startXY = [e.clientX, e.clientY];
-  }
+  };
 
   handleMouseUp = (e) => {
     if (!this.startXY) {
@@ -273,7 +233,7 @@ class StatusContent extends React.PureComponent {
     }
 
     this.startXY = null;
-  }
+  };
 
   handleSpoilerClick = (e) => {
     e.preventDefault();
@@ -284,15 +244,15 @@ class StatusContent extends React.PureComponent {
     } else {
       this.setState({ hidden: !this.state.hidden });
     }
-  }
+  };
 
   handleTranslate = () => {
     this.props.onTranslate();
-  }
+  };
 
   setRef = (c) => {
     this.node = c;
-  }
+  };
 
   render () {
     const { status, intl } = this.props;

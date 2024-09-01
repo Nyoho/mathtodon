@@ -1,5 +1,5 @@
 ---
-:concurrency: 5
+:concurrency: <%= ENV.fetch('SIDEKIQ_CONCURRENCY', 5) %>
 :queues:
   - [default, 8]
   - [push, 6]
@@ -57,4 +57,8 @@
   suspended_user_cleanup_scheduler:
     interval: 1 minute
     class: Scheduler::SuspendedUserCleanupScheduler
+    queue: scheduler
+  auto_close_registrations_scheduler:
+    interval: 1 hour
+    class: Scheduler::AutoCloseRegistrationsScheduler
     queue: scheduler
