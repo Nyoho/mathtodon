@@ -109,7 +109,7 @@ class StatusContent extends React.PureComponent {
       }
     }
 
-    loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
+    loadScriptOnce('https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
       .then(() => {
         const options = {
           tex2jax: {

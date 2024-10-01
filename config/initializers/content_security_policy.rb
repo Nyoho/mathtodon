@@ -20,8 +20,7 @@ media_host ||= host_to_url(ENV['S3_CLOUDFRONT_HOST'])
 media_host ||= host_to_url(ENV['S3_HOSTNAME']) if ENV['S3_ENABLED'] == 'true'
 media_host ||= assets_host
 
-cloudflarecdn = 'https://cdnjs.cloudflare.com'
-mathjax = 'https://cdn.mathjax.org'
+JSDELIVR_CDN = 'https://cdn.jsdelivr.net'
 
 Rails.application.config.content_security_policy do |p|
   p.base_uri        :none
@@ -38,12 +37,12 @@ Rails.application.config.content_security_policy do |p|
   if Rails.env.development?
     webpacker_urls = %w(ws http).map { |protocol| "#{protocol}#{Webpacker.dev_server.https? ? 's' : ''}://#{Webpacker.dev_server.host_with_port}" }
 
-    p.font_src    :self, assets_host, cloudflarecdn
-    p.img_src     :self, :https, :data, :blob, assets_host, cloudflarecdn, mathjax
-    p.style_src   :self, :unsafe_inline, assets_host, cloudflarecdn, mathjax
-    p.media_src   :self, :https, :data, assets_host, cloudflarecdn, mathjax
-    p.connect_src :self, :data, :blob, assets_host, media_host, Rails.configuration.x.streaming_api_base_url, *webpacker_urls, cloudflarecdn, mathjax
-    p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host, cloudflarecdn, mathjax
+    p.font_src    :self, assets_host, JSDELIVR_CDN
+    p.img_src     :self, :https, :data, :blob, assets_host
+    p.style_src   :self, :unsafe_inline, assets_host, JSDELIVR_CDN
+    p.media_src   :self, :https, :data, assets_host
+    p.connect_src :self, :data, :blob, assets_host, media_host, Rails.configuration.x.streaming_api_base_url, *webpacker_urls
+    p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host, JSDELIVR_CDN
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
   else
@@ -57,9 +56,9 @@ end
 # Report CSP violations to a specified URI
 # For further information see the following documentation:
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
-# Rails.application.config.content_security_policy_report_only = true
+Rails.application.config.content_security_policy_report_only = true
 
-Rails.application.config.content_security_policy_nonce_generator = -> request { SecureRandom.base64(16) }
+# Rails.application.config.content_security_policy_nonce_generator = -> request { SecureRandom.base64(16) }
 
 Rails.application.config.content_security_policy_nonce_directives = %w(style-src)
 

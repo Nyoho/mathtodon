@@ -39,7 +39,7 @@ function main() {
   const { createBrowserHistory } = require('history');
 
   /* global MathJax */
-  loadScript('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function () {
+  loadScript('https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function () {
     const options = {
       tex2jax: {
         inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
