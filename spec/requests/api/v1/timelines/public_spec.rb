@@ -8,16 +8,6 @@ describe 'Public' do
   let(:token)   { Fabricate(:accessible_access_token, resource_owner_id: user.id, scopes: scopes) }
   let(:headers) { { 'Authorization' => "Bearer #{token.token}" } }
 
-  shared_examples 'forbidden for wrong scope' do |wrong_scope|
-    let(:scopes) { wrong_scope }
-
-    it 'returns http forbidden' do
-      subject
-
-      expect(response).to have_http_status(403)
-    end
-  end
-
   shared_examples 'a successful request to the public timeline' do
     it 'returns the expected statuses successfully', :aggregate_failures do
       subject
@@ -64,6 +54,13 @@ describe 'Public' do
       context 'with remote param' do
         let(:params) { { remote: true } }
         let(:expected_statuses) { [remote_status] }
+
+        it_behaves_like 'a successful request to the public timeline'
+      end
+
+      context 'with local and remote params' do
+        let(:params) { { local: true, remote: true } }
+        let(:expected_statuses) { [local_status, remote_status, media_status] }
 
         it_behaves_like 'a successful request to the public timeline'
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe Admin::StatusesController do
@@ -18,7 +20,7 @@ describe Admin::StatusesController do
   end
 
   describe 'GET #index' do
-    context do
+    context 'with a valid account' do
       before do
         get :index, params: { account_id: account.id }
       end
@@ -28,7 +30,7 @@ describe Admin::StatusesController do
       end
     end
 
-    context 'filtering by media' do
+    context 'when filtering by media' do
       before do
         get :index, params: { account_id: account.id, media: '1' }
       end
