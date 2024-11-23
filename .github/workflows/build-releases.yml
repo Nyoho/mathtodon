@@ -14,11 +14,11 @@ jobs:
   build-image:
     uses: ./.github/workflows/build-container-image.yml
     with:
-      platforms: linux/amd64,linux/arm64
+      platforms: linux/amd64
       use_native_arm64_builder: true
       push_to_images: |
         Nyoho/mathtodon
-        ghcr.io/Nyoho/mathtodon
+        ghcr.io/nyoho/mathtodon
       # Do not use cache when building releases, so apt update is always ran and the release always contain the latest packages
       cache: false
       # Only tag with latest when ran against the latest stable branch
