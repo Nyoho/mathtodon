@@ -1,7 +1,10 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+
+import { debounce } from 'lodash';
+
 import emojify from '../../emoji/emoji';
-import { debounce } from 'react-decoration';
+
 
 /* global MathJax */
 // const loadScriptOnce = require('load-script-once');
@@ -16,9 +19,7 @@ class LivePreview extends React.PureComponent {
     };
   }
 
-  // @debounce(375)
-  // TODO: Fix it not to use decoration
-  changeTextToRender() {
+  changeTextToRender = debounce(() => {
     const text = this.props.text.replace(/\n/g, '<br>');
 
     this.setState({ textToRender: text });
@@ -27,7 +28,9 @@ class LivePreview extends React.PureComponent {
     if (MathJax !== undefined) {
       MathJax.Hub.Queue(['Typeset', MathJax.Hub, node]);
     }
-  }
+  }, 375, {
+    trailing: true,
+  })
 
   componentWillUpdate() {
   }
