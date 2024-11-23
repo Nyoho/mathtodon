@@ -15,7 +15,7 @@ module Cacheable
     end
 
     def preload_cacheable_associations(records)
-      ActiveRecord::Associations::Preloader.new.preload(records, @cache_associated)
+      ActiveRecord::Associations::Preloader.new(records: records, associations: @cache_associated).call
     end
 
     def cache_ids

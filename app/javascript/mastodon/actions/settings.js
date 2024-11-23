@@ -1,5 +1,7 @@
-import api from '../api';
 import { debounce } from 'lodash';
+
+import api from '../api';
+
 import { showAlertForError } from './alerts';
 
 export const SETTING_CHANGE = 'SETTING_CHANGE';
@@ -18,7 +20,7 @@ export function changeSetting(path, value) {
 }
 
 const debouncedSave = debounce((dispatch, getState) => {
-  if (getState().getIn(['settings', 'saved'])) {
+  if (getState().getIn(['settings', 'saved']) || !getState().getIn(['meta', 'me'])) {
     return;
   }
 
