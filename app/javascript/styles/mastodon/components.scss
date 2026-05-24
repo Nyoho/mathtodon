@@ -346,6 +346,15 @@ body > [data-popper-placement] {
 .compose-form {
   padding: 15px;
 
+  &__body,
+  &__editor {
+    min-width: 0;
+  }
+
+  &__body {
+    position: relative;
+  }
+
   &__sensitive-button {
     padding: 10px;
     padding-top: 0;
@@ -668,6 +677,13 @@ body > [data-popper-placement] {
         line-height: 27px;
       }
 
+      .compose-form__preview-toggle {
+        min-width: 23.1429px;
+        height: 27px;
+        line-height: 27px;
+        font-size: 18px;
+      }
+
       .compose-form__sensitive-button {
         display: none;
 
@@ -706,10 +722,109 @@ body > [data-popper-placement] {
 }
 
 .compose-form__live-preview {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 4px;
+  display: none;
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 100;
+  box-sizing: border-box;
+  max-height: min(60vh, 420px);
+  color: $primary-text-color;
   background: $ui-base-color;
+  border: 1px solid lighten($ui-base-color, 8%);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -8px 24px rgba($base-shadow-color, 0.35);
+  flex-direction: column;
+  overflow: hidden;
+
+  &--open {
+    display: flex;
+  }
+}
+
+.compose-form__live-preview-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  color: $secondary-text-color;
+  border-bottom: 1px solid lighten($ui-base-color, 8%);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.compose-form__live-preview-close {
+  flex: 0 0 auto;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.compose-form__live-preview-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+  scrollbar-color: initial;
+
+  .MathJax_Display {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+@media screen and (width >= 631px) {
+  .compose-form__live-preview--open {
+    top: var(--compose-preview-top, auto);
+    right: auto;
+    bottom: var(--compose-preview-bottom, 16px);
+    left: var(--compose-preview-left, 16px);
+    width: var(--compose-preview-width, min(420px, calc(100vw - 32px)));
+    max-height: var(--compose-preview-max-height, min(55vh, 480px));
+    border: 1px solid lighten($ui-base-color, 8%);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba($base-shadow-color, 0.35);
+  }
+}
+
+@media screen and (width >= 760px) {
+  .compose-standalone .compose-form--with-preview .compose-form__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.85fr);
+    align-items: start;
+    gap: 12px;
+  }
+
+  .compose-standalone
+    .compose-form--with-preview
+    .compose-form__preview-toggle {
+    display: none;
+  }
+
+  .compose-standalone .compose-form--with-preview .compose-form__live-preview,
+  .compose-standalone
+    .compose-form--with-preview
+    .compose-form__live-preview--open {
+    display: flex;
+    position: sticky;
+    inset: auto;
+    top: 10px;
+    width: auto;
+    max-height: min(520px, calc(100vh - 40px));
+    border: 1px solid lighten($ui-base-color, 8%);
+    border-radius: 4px;
+    box-shadow: none;
+  }
+
+  .compose-standalone
+    .compose-form--with-preview
+    .compose-form__live-preview-close {
+    display: none;
+  }
 }
 
 .character-counter {
@@ -931,7 +1046,7 @@ $blackboardcolor: #315653;
   padding: 16px - $bb-wood-width !important;
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: 0;
     right: 10px;
@@ -942,7 +1057,7 @@ $blackboardcolor: #315653;
   }
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     bottom: 0;
     right: 29px;
@@ -957,7 +1072,8 @@ $blackboardcolor: #315653;
   }
 }
 
-article:has(.mathjaxified__content) + article:has(.mathjaxified__content) { // TODO: CSS 4
+article:has(.mathjaxified__content) + article:has(.mathjaxified__content) {
+  // TODO: CSS 4
   border-top: 0 !important;
 }
 

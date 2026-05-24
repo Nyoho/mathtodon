@@ -22,26 +22,33 @@ class LivePreview extends React.PureComponent {
   changeTextToRender = debounce(() => {
     const text = this.props.text.replace(/\n/g, '<br>');
 
-    this.setState({ textToRender: text });
-    this.render();
-    const node  = this.nodeRef.current;
-    if (MathJax !== undefined) {
-      MathJax.Hub.Queue(['Typeset', MathJax.Hub, node]);
-    }
+    this.setState({ textToRender: text }, () => {
+      const node  = this.nodeRef.current;
+      if (node && typeof MathJax !== 'undefined' && MathJax.Hub) {
+        MathJax.Hub.Queue(['Typeset', MathJax.Hub, node]);
+      }
+    });
   }, 375, {
     trailing: true,
   })
 
-  componentWillUpdate() {
+  componentDidMount () {
+    this.changeTextToRender();
   }
 
-  componentDidUpdate() {
-    this.changeTextToRender();
+  componentDidUpdate (prevProps) {
+    if (prevProps.text !== this.props.text) {
+      this.changeTextToRender();
+    }
+  }
+
+  componentWillUnmount () {
+    this.changeTextToRender.cancel();
   }
 
   render () {
     const text = this.state.textToRender;
-    return <div dangerouslySetInnerHTML={{ __html: emojify(text) }} />;
+    return <div ref={this.nodeRef} dangerouslySetInnerHTML={{ __html: emojify(text) }} />;
   }
 
 }

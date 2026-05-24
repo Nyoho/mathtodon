@@ -14,7 +14,6 @@ import { Icon }  from 'mastodon/components/icon';
 import AutosuggestInput from '../../../components/autosuggest_input';
 import AutosuggestTextarea from '../../../components/autosuggest_textarea';
 import Button from '../../../components/button';
-import LivePreview from './live_preview';
 import EmojiPickerDropdown from '../containers/emoji_picker_dropdown_container';
 import LanguageDropdown from '../containers/language_dropdown_container';
 import PollButtonContainer from '../containers/poll_button_container';
@@ -26,14 +25,14 @@ import UploadButtonContainer from '../containers/upload_button_container';
 import UploadFormContainer from '../containers/upload_form_container';
 import WarningContainer from '../containers/warning_container';
 import { countableText } from '../util/counter';
-import { Spring } from 'react-spring/renderprops';
+
+import CharacterCounter from './character_counter';
+import LivePreview from './live_preview';
 
 const isMathjaxifyable = str =>
   [ /\$\$([\s\S]+?)\$\$/g, /\$([\s\S]+?)\$/g, /\\\(([\s\S]+?)\\\)/g, /\\\[([\s\S]+?)\\\]/g]
     .map( r => str.match(r))
     .reduce((prev, elem) => prev || elem, false);
-
-import CharacterCounter from './character_counter';
 
 const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
 
@@ -43,6 +42,10 @@ const messages = defineMessages({
   publish: { id: 'compose_form.publish', defaultMessage: 'Publish' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
+  showPreview: { id: 'compose_form.preview.show', defaultMessage: 'Show preview' },
+  hidePreview: { id: 'compose_form.preview.hide', defaultMessage: 'Hide preview' },
+  preview: { id: 'compose_form.preview', defaultMessage: 'Preview' },
+  closePreview: { id: 'compose_form.preview.close', defaultMessage: 'Close preview' },
 });
 
 class ComposeForm extends ImmutablePureComponent {
@@ -86,6 +89,8 @@ class ComposeForm extends ImmutablePureComponent {
 
   state = {
     highlighted: false,
+    previewOpen: false,
+    previewStyle: null,
   };
 
   handleChange = (e) => {
@@ -159,14 +164,23 @@ class ComposeForm extends ImmutablePureComponent {
 
   componentDidMount () {
     this._updateFocusAndSelection({ });
+    window.addEventListener('resize', this.schedulePreviewPlacement);
   }
 
   componentWillUnmount () {
     if (this.timeout) clearTimeout(this.timeout);
+    if (this.previewPlacementFrame) window.cancelAnimationFrame(this.previewPlacementFrame);
+    window.removeEventListener('resize', this.schedulePreviewPlacement);
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate (prevProps, prevState) {
     this._updateFocusAndSelection(prevProps);
+
+    if (this.state.previewOpen && isMathjaxifyable(prevProps.text) && !isMathjaxifyable(this.props.text)) {
+      this.setState({ previewOpen: false });
+    } else if (this.state.previewOpen && (prevState.previewOpen !== this.state.previewOpen || prevProps.text !== this.props.text || prevProps.spoiler !== this.props.spoiler || prevProps.spoilerText !== this.props.spoilerText)) {
+      this.schedulePreviewPlacement();
+    }
   }
 
   _updateFocusAndSelection = (prevProps) => {
@@ -221,6 +235,10 @@ class ComposeForm extends ImmutablePureComponent {
     this.composeForm = c;
   };
 
+  setPublishButtonWrapper = c => {
+    this.publishButtonWrapper = c;
+  };
+
   handleEmojiPick = (data) => {
     const { text }     = this.props;
     const position     = this.autosuggestTextarea.textarea.selectionStart;
@@ -229,9 +247,65 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onPickEmoji(position, data, needsSpace);
   };
 
+  handlePreviewToggle = () => {
+    this.setState(({ previewOpen }) => ({ previewOpen: !previewOpen }), this.schedulePreviewPlacement);
+  };
+
+  handlePreviewClose = () => {
+    this.setState({ previewOpen: false });
+  };
+
+  schedulePreviewPlacement = () => {
+    if (this.previewPlacementFrame) {
+      window.cancelAnimationFrame(this.previewPlacementFrame);
+    }
+
+    this.previewPlacementFrame = window.requestAnimationFrame(this.updatePreviewPlacement);
+  };
+
+  updatePreviewPlacement = () => {
+    this.previewPlacementFrame = null;
+
+    if (!this.state.previewOpen || !this.composeForm || !this.publishButtonWrapper) {
+      return;
+    }
+
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+
+    if (viewportWidth < 631) {
+      if (this.state.previewStyle !== null) {
+        this.setState({ previewStyle: null });
+      }
+
+      return;
+    }
+
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const formRect = this.composeForm.getBoundingClientRect();
+    const publishRect = this.publishButtonWrapper.getBoundingClientRect();
+    const margin = 8;
+    const minHeight = 160;
+    const width = Math.min(420, Math.max(260, Math.min(formRect.width, viewportWidth - (margin * 2))));
+    const left = Math.min(Math.max(formRect.left, margin), viewportWidth - width - margin);
+    const desiredTop = publishRect.bottom + margin;
+    const top = Math.min(desiredTop, Math.max(margin, viewportHeight - minHeight - margin));
+    const maxHeight = Math.min(360, Math.max(minHeight, viewportHeight - top - margin));
+    const previewStyle = {
+      '--compose-preview-bottom': 'auto',
+      '--compose-preview-left': `${left}px`,
+      '--compose-preview-max-height': `${maxHeight}px`,
+      '--compose-preview-top': `${top}px`,
+      '--compose-preview-width': `${width}px`,
+    };
+
+    if (!this.state.previewStyle || Object.keys(previewStyle).some(key => previewStyle[key] !== this.state.previewStyle[key])) {
+      this.setState({ previewStyle });
+    }
+  };
+
   render () {
     const { intl, onPaste, autoFocus } = this.props;
-    const { highlighted } = this.state;
+    const { highlighted, previewOpen } = this.state;
     const disabled = this.props.isSubmitting;
 
     let publishText = '';
@@ -244,93 +318,117 @@ class ComposeForm extends ImmutablePureComponent {
       publishText = this.props.privacy !== 'unlisted' ? intl.formatMessage(messages.publishLoud, { publish: intl.formatMessage(messages.publish) }) : intl.formatMessage(messages.publish);
     }
 
-    const flag = isMathjaxifyable(this.props.text);
+    const hasLivePreview = isMathjaxifyable(this.props.text);
+    const previewId = 'compose-form-live-preview';
+    const previewTitle = intl.formatMessage(messages.preview);
+    const previewButtonTitle = intl.formatMessage(previewOpen ? messages.hidePreview : messages.showPreview);
 
     return (
-      <form className='compose-form' onSubmit={this.handleSubmit}>
+      <form ref={this.setRef} className={classNames('compose-form', { 'compose-form--with-preview': hasLivePreview, 'compose-form--preview-open': previewOpen })} onSubmit={this.handleSubmit}>
         <WarningContainer />
 
         <ReplyIndicatorContainer />
 
-        <div className={`spoiler-input ${this.props.spoiler ? 'spoiler-input--visible' : ''}`} ref={this.setRef} aria-hidden={!this.props.spoiler}>
-          <AutosuggestInput
-            placeholder={intl.formatMessage(messages.spoiler_placeholder)}
-            value={this.props.spoilerText}
-            onChange={this.handleChangeSpoilerText}
-            onKeyDown={this.handleKeyDown}
-            disabled={!this.props.spoiler}
-            ref={this.setSpoilerText}
-            suggestions={this.props.suggestions}
-            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-            onSuggestionSelected={this.onSpoilerSuggestionSelected}
-            searchTokens={[':']}
-            id='cw-spoiler-input'
-            className='spoiler-input__input'
-            lang={this.props.lang}
-            spellCheck
-          />
-        </div>
-
-        <div className={classNames('compose-form__highlightable', { active: highlighted })}>
-          <AutosuggestTextarea
-            ref={this.setAutosuggestTextarea}
-            placeholder={intl.formatMessage(messages.placeholder)}
-            disabled={disabled}
-            value={this.props.text}
-            onChange={this.handleChange}
-            suggestions={this.props.suggestions}
-            onFocus={this.handleFocus}
-            onKeyDown={this.handleKeyDown}
-            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-            onSuggestionSelected={this.onSuggestionSelected}
-            onPaste={onPaste}
-            autoFocus={autoFocus}
-            lang={this.props.lang}
-          >
-            <div className='compose-form__modifiers'>
-              <UploadFormContainer />
-              <PollFormContainer />
-            </div>
-          </AutosuggestTextarea>
-          <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
-
-          <div className='compose-form__buttons-wrapper'>
-            <div className='compose-form__buttons'>
-              <UploadButtonContainer />
-              <PollButtonContainer />
-              <PrivacyDropdownContainer disabled={this.props.isEditing} />
-              <SpoilerButtonContainer />
-              <LanguageDropdown />
+        <div className='compose-form__body'>
+          <div className='compose-form__editor'>
+            <div className={`spoiler-input ${this.props.spoiler ? 'spoiler-input--visible' : ''}`} aria-hidden={!this.props.spoiler}>
+              <AutosuggestInput
+                placeholder={intl.formatMessage(messages.spoiler_placeholder)}
+                value={this.props.spoilerText}
+                onChange={this.handleChangeSpoilerText}
+                onKeyDown={this.handleKeyDown}
+                disabled={!this.props.spoiler}
+                ref={this.setSpoilerText}
+                suggestions={this.props.suggestions}
+                onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                onSuggestionSelected={this.onSpoilerSuggestionSelected}
+                searchTokens={[':']}
+                id='cw-spoiler-input'
+                className='spoiler-input__input'
+                lang={this.props.lang}
+                spellCheck
+              />
             </div>
 
-            <div className='character-counter__wrapper'>
-              <CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} />
+            <div className={classNames('compose-form__highlightable', { active: highlighted })}>
+              <AutosuggestTextarea
+                ref={this.setAutosuggestTextarea}
+                placeholder={intl.formatMessage(messages.placeholder)}
+                disabled={disabled}
+                value={this.props.text}
+                onChange={this.handleChange}
+                suggestions={this.props.suggestions}
+                onFocus={this.handleFocus}
+                onKeyDown={this.handleKeyDown}
+                onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                onSuggestionSelected={this.onSuggestionSelected}
+                onPaste={onPaste}
+                autoFocus={autoFocus}
+                lang={this.props.lang}
+              >
+                <div className='compose-form__modifiers'>
+                  <UploadFormContainer />
+                  <PollFormContainer />
+                </div>
+              </AutosuggestTextarea>
+              <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
+
+              <div className='compose-form__buttons-wrapper'>
+                <div className='compose-form__buttons'>
+                  <UploadButtonContainer />
+                  <PollButtonContainer />
+                  <PrivacyDropdownContainer disabled={this.props.isEditing} />
+                  <SpoilerButtonContainer />
+                  <LanguageDropdown />
+                  {hasLivePreview && (
+                    <button
+                      type='button'
+                      className={classNames('icon-button', 'compose-form__preview-toggle', { active: previewOpen })}
+                      title={previewButtonTitle}
+                      aria-label={previewButtonTitle}
+                      aria-expanded={previewOpen}
+                      aria-controls={previewId}
+                      onClick={this.handlePreviewToggle}
+                    >
+                      <Icon id={previewOpen ? 'eye-slash' : 'eye'} fixedWidth />
+                    </button>
+                  )}
+                </div>
+
+                <div className='character-counter__wrapper'>
+                  <CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} />
+                </div>
+              </div>
+            </div>
+
+            <div className='compose-form__publish'>
+              <div className='compose-form__publish-button-wrapper' ref={this.setPublishButtonWrapper}>
+                <Button
+                  type='submit'
+                  text={publishText}
+                  disabled={!this.canSubmit()}
+                  block
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className='compose-form__publish'>
-          <div className='compose-form__publish-button-wrapper'>
-            <Button
-              type='submit'
-              text={publishText}
-              disabled={!this.canSubmit()}
-              block
-            />
-          </div>
+          {hasLivePreview && (
+            <aside id={previewId} className={classNames('compose-form__live-preview', { 'compose-form__live-preview--open': previewOpen })} style={this.state.previewStyle} aria-label={previewTitle}>
+              <div className='compose-form__live-preview-header'>
+                <span>{previewTitle}</span>
+                <button type='button' className='icon-button compose-form__live-preview-close' title={intl.formatMessage(messages.closePreview)} aria-label={intl.formatMessage(messages.closePreview)} onClick={this.handlePreviewClose}>
+                  <Icon id='times' fixedWidth />
+                </button>
+              </div>
+              <div className='compose-form__live-preview-scroll'>
+                <LivePreview text={this.props.text} />
+              </div>
+            </aside>
+          )}
         </div>
-        <Spring
-          config={{ tension: 273, friction: 17, mass: 0.8 }}
-          from={{ opacity: flag ? 0 : 1, transform: flag ? 'scale(0)' : 'scale(1)' }}
-          to={{ opacity: flag ? 1 : 0, transform: flag ? 'scale(1)' : 'scale(0)' }}
-        >
-          {props => (<div style={props} className='compose-form__live-preview'>
-            <LivePreview text={this.props.text} />
-          </div>)
-          }
-        </Spring>
       </form>
     );
   }
