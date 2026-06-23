@@ -85,7 +85,7 @@
     "intl-messageformat": "^10.3.5",
     "ioredis": "^5.3.2",
     "js-yaml": "^4.1.0",
-    "load-script": "^1.0.0",
+    "load-script": "^2.0.0",
     "load-script-once": "^2.0.1",
     "jsdom": "^22.1.0",
     "lodash": "^4.17.21",
